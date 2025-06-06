@@ -1,6 +1,8 @@
 # Makefile for A09
 
-all: a09
+all: a09 
+
+a09.o: a09.h 
 
 clean:
 	-$(RM) a09
