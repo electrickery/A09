@@ -1,0 +1,12 @@
+
+The fork was done to add the FCCH pseudo-operation, allowing a 'hi-bit'-terminated
+string definition. This wasn't easy to do without making the code less readable.
+
+In general, the code suffers from overly long functions and not enough abstraction.
+There are even goto's inside large switch statements, jumping between case's.
+
+To refactor the code with any hope of success, there is now a rudimentary
+set of test cases. These are probably not usable cross-platform, but it is better 
+than nothing.
+
+fjkraan@electrickery.nl, 2025-06-06
