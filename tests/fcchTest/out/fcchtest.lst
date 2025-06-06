@@ -1,0 +1,18 @@
+                                            ; FCCH test
+
+
+                            
+                            ORG     $E000
+                            
+                      TEXT
+ E000 54686973206973        FCCH       'This is test text'
+ E007 20746573742074
+ E00E 6578F4
+                            
+                            END
+
+SYMBOL TABLE
+      TEXT 02 E000
+1 SYMBOLS
+
+0 error(s), 0 warning(s)

@@ -1,0 +1,20 @@
+3 error(s), 0 warning(s) unlisted in pass 1
+                                            ; no label MACRO
+
+                            MACRO
+*** Error 6: Missing label
+ 0000 12                    NOP
+ 0001 12                    NOP
+                            ENDM
+*** Error 1: Error in expression
+                            
+                            ORG     $0
+                            TEST
+*** Error 16: Illegal mnemonic
+
+3 error(s) in pass 2.
+
+SYMBOL TABLE
+0 SYMBOLS
+
+6 error(s), 0 warning(s)
