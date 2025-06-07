@@ -1,0 +1,11 @@
+A09 Assembler V1.62
+Warning: MACRO not supported
+macrotest.asm(3) : error 6: Missing label in "      MACRO"
+macrotest.asm(6) : error 1: Error in expression in "      ENDM"
+macrotest.asm(9) : error 16: Illegal mnemonic in "      TEST"
+3 error(s) in pass 1
+Warning: MACRO not supported
+macrotest.asm(3) : error 6: Missing label in "      MACRO"
+macrotest.asm(6) : error 1: Error in expression in "      ENDM"
+macrotest.asm(9) : error 16: Illegal mnemonic in "      TEST"
+3 error(s) in pass 2

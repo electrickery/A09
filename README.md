@@ -29,15 +29,15 @@ Hermann Seib, 2022
 ### Command Line Parameters
 
 <dl>
-  <dt><b>-c</b></dt>
+ <dt><b>-c</b></dt>
   <dd>suppresses code output (corresponds to ASMB's <b>B</b> command line option)</dd>
-  <dt><b>-u</b></dt>
+ <dt><b>-u</b></dt>
   <dd>shorthand notation for the <b>UEX</b> option (see below)</b></dd>
-  <dt><b>-b<i>filename</i></b> (default output mode)</dt>
+ <dt><b>-b<i>filename</i></b> (default output mode)</dt>
   <dd>create a binary output file<br>
   if no file name is given, the extension <b>.bin</b> is used (<b>.b</b> on 
   Unix)</dd>
-  <dt><b>-r<i>filename</i></b></dt>
+ <dt><b>-r<i>filename</i></b></dt>
   <dd>create a Flex9 RELASMB-compatible output file name<br>
   if no file name is given, the extension <b>.rel</b> is used</dd>
   <dd><b>Attention:</b> this file format is undocumented; my solution has been 
@@ -46,27 +46,27 @@ Hermann Seib, 2022
   identical to RELASMB's; nevertheless, A09 <i>might</i> create modules that are 
   incompatible with the original under circumstances that I don't know or 
   haven't tested.</dd>
-  <dt><b>-s<i>filename</i></b></dt>
+ <dt><b>-s<i>filename</i></b></dt>
   <dd>create a Motorola S-record output file name<br>
   if no file name is given, the extension <b>.s09</b> is used</dd>
-  <dt><b>-x<i>filename</i></b></dt>
+ <dt><b>-x<i>filename</i></b></dt>
   <dd>create an Intel hex output file name<br>
   if no file name is given, the extension <b>.hex</b> is used</dd>
-  <dt><b>-f<i>filename</i></b></dt>
+ <dt><b>-f<i>filename</i></b></dt>
   <dd>create Flex9 ASMB-compatible output file<br>
   if no file name is given, the extension <b>.bin</b> is used</dd>
-  <dt><b>-l<i>filename</i></b></dt>
+ <dt><b>-l<i>filename</i></b></dt>
   <dd>create a list file (default no listing)<br>
   if no file name is given, the extension <b>.lst</b> is used</dd>
-  <dt><b>-d<i>sym</i>[=<i>value</i>]</b></dt>
+ <dt><b>-d<i>sym</i>[=<i>value</i>]</b></dt>
   <dd>define a symbol (see <b>TEXT</b> directive below) <br>
   (roughly corresponds to ASMB's command line parameters 1-3)</dd>
-  <dt><b>-o<i>opt</i></b></dt>
+ <dt><b>-o<i>opt</i></b></dt>
   <dd>defines an option (see below)</dd>
-  <dt><b>sourcefile</b></dt>
+ <dt><b>sourcefile</b></dt>
   <dd>the assembler source file(s) to be processed.<br>
       At least one source file must be given; the first one also defines
-	  the default output and listing file names.</dd>
+      the default output and listing file names.</dd>
 </dl>
 
 ## Options

@@ -1,5 +1,7 @@
 # Makefile for A09
 
+CFLAGS= -Wall -Wpedantic -fsigned-char
+
 all: a09 
 
 a09.o: a09.h 

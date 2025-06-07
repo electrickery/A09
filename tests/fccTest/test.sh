@@ -1,25 +1,27 @@
 #!/bin/sh
 
+. ../config.sh
+
 TESTFILE=fcctest
-EXE=../../a09
 
 FILES="$TESTFILE.lst $TESTFILE.s19"
-LOG=test.log
 
-rm -f *.log out/*
+rm -f out/*
 
-BASE=`echo $TESTFILE | sed -e 's/\.asm$//'`
+$EXE $TESTFILE.asm -Sout/$TESTFILE.s19 -Lout/$TESTFILE.lst > out/a09out.log 2>&1
 
-#./asm09.sh $BASE.asm -Sout/$BASE.s19 -Lout/$BASE.lst  -B -W > test.log 2>&1
-$EXE -sout/$BASE.s19 -lout/$BASE.lst  $BASE.asm > test.log 2>&1
-
-
+DIFFOUND=0
 for FILE in $FILES
 do
-    diff -w out/$FILE ref/$FILE >> $LOG
+    diff -w out/$FILE ref/$FILE >> out/$LOG
     if [ $? != 0 ] 
     then
+        DIFFOUND=-1
         echo "Difference in $FILE"
-        cat $LOG
     fi
 done
+
+if [ $DIFFOUND = -1 ] 
+then
+    cat out/$LOG
+fi
