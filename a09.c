@@ -1934,7 +1934,51 @@ void scanindexed()
 /* scanoperands :                                                            */
 /*****************************************************************************/
 
-#define RESTORE { srcptr = oldsrcptr; c = *srcptr; goto dodefault; }
+void dodefault(struct relocrecord *pp) {
+    operand = scanexpr(0, pp);
+    if (!(dwOptions & OPTION_TSC))
+      skipspace();
+    if (*srcptr == ',')
+    {
+      srcptr++;
+      if (!(dwOptions & OPTION_TSC))
+        skipspace();
+    #if 1
+      /* The TSC 6809 assembler, according to its documentation,
+         allows constructs like "0,-[-]reg" or "0,reg+[+]", i.e., it treats
+         "zero offset" like "no offset". Duplicated here. */
+      if ((operand == 0) &&             /* special for "0,-[-]indexreg       */
+          (!unknown) && (certain) &&    /*         and "0,indexreg[+[+]]     */
+          (opsize < 2) &&               /* but NOT for ">0,indexreg"!        */
+          (*srcptr == '-' ||
+           (isindexreg() && srcptr[1] == '+')))
+        scanspecial();
+      else
+    #endif
+        scanindexed();
+    }
+    else
+    {
+      if (opsize == 0)
+      {
+        if (unknown || !certain || dpsetting == -1 ||
+          (unsigned short)(operand - dpsetting * 256) >= 256)
+          opsize = 3;
+        else
+          opsize = 2;
+      }  
+      if (opsize == 1)
+        opsize = 2;         
+      if (mode == ADRMODE_IND)
+      {
+        postbyte = 0x8f;
+        opsize = 3;
+      }
+      else
+        mode = opsize - 1;
+    }
+}
+
 
 void scanoperands09(struct relocrecord *pp, int endc)
 {
@@ -1962,40 +2006,45 @@ void scanoperands09(struct relocrecord *pp, int endc)
         if (!(dwOptions & OPTION_TSC))
           skipspace();
         if (*srcptr != ',')
-          RESTORE
+          { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
         else
-          {
+        {
           if ((h63) && (!(dwOptions & OPTION_H09)))
             error |= ERR_ILLEGAL_ADDR;
           postbyte = accpost;
           srcptr++;
           if (!scanindexreg())
-            RESTORE
+            { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
           else
-            {
+          {
             srcptr++;
             set3();
-            }
           }
+        }   
         break;    
       case 'A':
         accpost = 0x86;
         goto accoffset;
+        break;
       case 'B':
         accpost = 0x85;
         goto accoffset;
+        break;
       case 'E':
         accpost = 0x87;
         h63 = 1;
         goto accoffset;
+        break;
       case 'F':
         accpost = 0x8a;
         h63 = 1;
         goto accoffset;
+        break;
       case 'W' :
         accpost = 0x8e;
         h63 = 1;
         goto accoffset;
+        break;
       case ',':
         srcptr++;
         scanspecial();
@@ -2017,56 +2066,16 @@ void scanoperands09(struct relocrecord *pp, int endc)
         }
         else
           opsize = 2;
-        goto dodefault;    
+        dodefault(pp);
+        break;
       case '>':
         srcptr++;
         opsize = 3;
         /* fall thru on purpose */
       default:
-      dodefault:
-        operand = scanexpr(0, pp);
-        if (!(dwOptions & OPTION_TSC))
-          skipspace();
-        if (*srcptr == ',')
-        {
-          srcptr++;
-          if (!(dwOptions & OPTION_TSC))
-            skipspace();
-    #if 1
-          /* The TSC 6809 assembler, according to its documentation,
-             allows constructs like "0,-[-]reg" or "0,reg+[+]", i.e., it treats
-             "zero offset" like "no offset". Duplicated here. */
-          if ((operand == 0) &&             /* special for "0,-[-]indexreg       */
-              (!unknown) && (certain) &&    /*         and "0,indexreg[+[+]]     */
-              (opsize < 2) &&               /* but NOT for ">0,indexreg"!        */
-              (*srcptr == '-' ||
-               (isindexreg() && srcptr[1] == '+')))
-            scanspecial();
-          else
-    #endif
-            scanindexed();
-        }
-        else
-        {
-          if (opsize == 0)
-          {
-            if (unknown || !certain || dpsetting == -1 ||
-              (unsigned short)(operand - dpsetting * 256) >= 256)
-              opsize = 3;
-            else
-              opsize = 2;
-          }  
-          if (opsize == 1)
-            opsize = 2;         
-          if (mode == ADRMODE_IND)
-          {
-            postbyte = 0x8f;
-            opsize = 3;
-          }
-          else
-            mode = opsize - 1;
-        }
-    }
+        dodefault(pp);
+
+    } // end switch
 
     if (mode >= ADRMODE_IND)
     {
@@ -2108,10 +2117,10 @@ void scanoperands00(struct relocrecord *pp, int endc)
           skipspace();
         scanname();
         if (strcmp(unamebuf, "X"))          /* if it's NOT "X" alone,            */
-          {
+        {
           error |= ERR_ILLEGAL_ADDR;
           break;
-          }
+        }
       XWithout :
         if ((unsigned)operand < 256)
           mode = ADRMODE_IDX;

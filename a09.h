@@ -1916,3 +1916,4 @@ struct linebuf * allocline
     strcpy(pNew->txt, text);
     return pNew;
 }
+
