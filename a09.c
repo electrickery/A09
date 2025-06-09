@@ -1979,6 +1979,28 @@ void dodefault(struct relocrecord *pp) {
     }
 }
 
+void accoffset(char c, unsigned char accpost, unsigned char h63, struct relocrecord *pp) {
+    char *oldsrcptr = srcptr;
+    srcptr++;
+    if (!(dwOptions & OPTION_TSC))
+      skipspace();
+    if (*srcptr != ',')
+      { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
+    else
+    {
+      if ((h63) && (!(dwOptions & OPTION_H09)))
+        error |= ERR_ILLEGAL_ADDR;
+      postbyte = accpost;
+      srcptr++;
+      if (!scanindexreg())
+        { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
+      else
+      {
+        srcptr++;
+        set3();
+      }
+    }
+}
 
 void scanoperands09(struct relocrecord *pp, int endc)
 {
@@ -2000,7 +2022,7 @@ void scanoperands09(struct relocrecord *pp, int endc)
     {
       case 'D':
         accpost = 0x8b;
-      accoffset:
+/*      accoffset:                // label
         oldsrcptr = srcptr;
         srcptr++;
         if (!(dwOptions & OPTION_TSC))
@@ -2020,30 +2042,36 @@ void scanoperands09(struct relocrecord *pp, int endc)
             srcptr++;
             set3();
           }
-        }   
+        }   */
+        accoffset(c, accpost, h63, pp);
         break;    
       case 'A':
         accpost = 0x86;
-        goto accoffset;
+//        goto accoffset;         // goto
+        accoffset(c, accpost, h63, pp);
         break;
       case 'B':
         accpost = 0x85;
-        goto accoffset;
+//        goto accoffset;         // goto
+        accoffset(c, accpost, h63, pp);
         break;
       case 'E':
         accpost = 0x87;
         h63 = 1;
-        goto accoffset;
+//        goto accoffset;         // goto
+        accoffset(c, accpost, h63, pp);
         break;
       case 'F':
         accpost = 0x8a;
         h63 = 1;
-        goto accoffset;
+//        goto accoffset;         // goto
+        accoffset(c, accpost, h63, pp);
         break;
       case 'W' :
         accpost = 0x8e;
         h63 = 1;
-        goto accoffset;
+//        goto accoffset;         // goto
+        accoffset(c, accpost, h63, pp);
         break;
       case ',':
         srcptr++;
