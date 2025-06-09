@@ -2004,7 +2004,7 @@ void accoffset(char c, unsigned char accpost, unsigned char h63, struct relocrec
 
 void scanoperands09(struct relocrecord *pp, int endc)
 {
-    char c, *oldsrcptr;
+    char c; 
     unsigned char accpost, h63 = 0;
 
     unknown = 0;
@@ -2022,55 +2022,29 @@ void scanoperands09(struct relocrecord *pp, int endc)
     {
       case 'D':
         accpost = 0x8b;
-/*      accoffset:                // label
-        oldsrcptr = srcptr;
-        srcptr++;
-        if (!(dwOptions & OPTION_TSC))
-          skipspace();
-        if (*srcptr != ',')
-          { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
-        else
-        {
-          if ((h63) && (!(dwOptions & OPTION_H09)))
-            error |= ERR_ILLEGAL_ADDR;
-          postbyte = accpost;
-          srcptr++;
-          if (!scanindexreg())
-            { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
-          else
-          {
-            srcptr++;
-            set3();
-          }
-        }   */
         accoffset(c, accpost, h63, pp);
         break;    
       case 'A':
         accpost = 0x86;
-//        goto accoffset;         // goto
         accoffset(c, accpost, h63, pp);
         break;
       case 'B':
         accpost = 0x85;
-//        goto accoffset;         // goto
         accoffset(c, accpost, h63, pp);
         break;
       case 'E':
         accpost = 0x87;
         h63 = 1;
-//        goto accoffset;         // goto
         accoffset(c, accpost, h63, pp);
         break;
       case 'F':
         accpost = 0x8a;
         h63 = 1;
-//        goto accoffset;         // goto
         accoffset(c, accpost, h63, pp);
         break;
       case 'W' :
         accpost = 0x8e;
         h63 = 1;
-//        goto accoffset;         // goto
         accoffset(c, accpost, h63, pp);
         break;
       case ',':
@@ -2135,11 +2109,11 @@ void scanoperands00(struct relocrecord *pp, int endc)
       case 'X' :                            /* "X"?                              */
         scanname();
         if (!strcmp(unamebuf, "X"))         /* if it's "X" alone,                */
-          goto XWithout;                    /* assume it means "0,X"             */
+          goto XWithout;                    /* assume it means "0,X"             */     // goto
         srcptr = s;                         /* else restore current offset       */
-        goto dodefault;                     /* and treat as label starting with X*/
+        goto dodefault;                     /* and treat as label starting with X*/     // goto
       case ',':                             /* ","?                              */
-      Indexed :     // label for GOTO!
+      Indexed :                                                                         // label
         srcptr++;                           /* must be followed by "X"           */
         if (!(dwOptions & OPTION_TSC))
           skipspace();
@@ -2149,7 +2123,7 @@ void scanoperands00(struct relocrecord *pp, int endc)
           error |= ERR_ILLEGAL_ADDR;
           break;
         }
-      XWithout :
+      XWithout :                                                                         // label
         if ((unsigned)operand < 256)
           mode = ADRMODE_IDX;
         else
@@ -2168,18 +2142,18 @@ void scanoperands00(struct relocrecord *pp, int endc)
           }
         else
           opsize = 2;
-        goto dodefault;    
+        goto dodefault;                                                              // goto  
       case '>':
         srcptr++;
         opsize = 3;
         /* fall thru on purpose */
       default:
-      dodefault:
+      dodefault:                                                                     // label  
         operand = scanexpr(0, pp);
         if (!(dwOptions & OPTION_TSC))
           skipspace();
         if (*srcptr == ',')
-          goto Indexed;         //    GOTO !
+          goto Indexed;                                                              //    goto
         else
         {
           if (opsize == 0)
@@ -2194,7 +2168,7 @@ void scanoperands00(struct relocrecord *pp, int endc)
             opsize = 2;         
           mode = opsize - 1;
         }
-    }
+    } // end switch
 
     if (pass == 2 && unknown)
       error |= ERR_LABEL_UNDEF; 
@@ -2218,11 +2192,11 @@ void scanoperands11(struct relocrecord *pp, int endc)
       case 'Y' :                            /* "Y"?                              */
         scanname();
         if (!unamebuf[1])                   /* if it's "X" or "Y" alone,         */
-          goto IdxWithout;                  /* assume it means "0,X" / "0,Y"     */
+          goto IdxWithout;                  /* assume it means "0,X" / "0,Y"     */     // goto
         srcptr = s;                         /* else restore current offset       */
-        goto dodefault;                     /* and treat as label                */
+        goto dodefault;                     /* and treat as label                */     // goto
       case ',':                             /* ","?                              */
-      Indexed :   // label for goto
+      Indexed :                                                                         // label
         srcptr++;                           /* must be followed by "X" or "Y"    */
         if (!(dwOptions & OPTION_TSC))
           skipspace();
@@ -2233,7 +2207,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
           error |= ERR_ILLEGAL_ADDR;
           break;
         }
-      IdxWithout :                     // label
+      IdxWithout :                                                                       // label
         if ((unsigned)operand < 256)
         {
           if (unamebuf[0] == 'X')           /* page byte processing for X        */
@@ -2274,13 +2248,13 @@ void scanoperands11(struct relocrecord *pp, int endc)
           }
         else
           opsize = 2;
-        goto dodefault;    // goto
+        goto dodefault;                                                               // goto
       case '>':
         srcptr++;
         opsize = 3;
         /* fall thru on purpose */
       default:
-      dodefault:           // label for goto
+      dodefault:                                                                       // label
         operand = scanexpr(0, pp);
         if (!(dwOptions & OPTION_TSC))
           skipspace();
@@ -2288,7 +2262,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
         if (*srcptr == ',')
         {
           if (!endc)
-            goto Indexed;    // goto
+            goto Indexed;                                                              // goto
           next = srcptr + 1;                /* if endc, parse ahead ...          */
           if (!(dwOptions & OPTION_TSC))
             parsespace(next, &next);
@@ -2297,7 +2271,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
               !strcmp(unamebuf, "Y"))       /* or "Y" alone                      */
           {
             srcptr = next;
-            goto IdxWithout;                /* process index argument            */
+            goto IdxWithout;                /* process index argument            */    // goto
           }
           /* otherwise end parsing here */
         }
@@ -2305,7 +2279,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
         if (*srcptr == ',')
         {
           if (!endc)
-            goto Indexed;        // goto
+            goto Indexed;                                                               // goto
         }
         else
     #endif
@@ -2322,7 +2296,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
             opsize = 2;         
           mode = opsize - 1;
         }
-    }
+    } //end switch
 
     if (pass == 2 && unknown)
       error |= ERR_LABEL_UNDEF; 

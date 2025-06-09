@@ -10,3 +10,8 @@ set of test cases. These are probably not usable cross-platform, but it is bette
 than nothing.
 
 fjkraan@electrickery.nl, 2025-06-06
+
+Fixed the switch with goto's for the 6809 situation, proving it is possible with
+some functions. The 6800 and 68C11 situation should be fixed too.
+
+fjkraan@electrickery.nl, 2025-06-09
