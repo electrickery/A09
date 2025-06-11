@@ -1,0 +1,76 @@
+
+
+
+
+                      ; Source: www.flexusergroup.com/flexusergroup/pdfs/asmb.pd
+f
+
+                              ORG     $f000
+                              
+ D0                           SETDP   $D0
+                              
+
+
+This is the title or TTL         2025-06-11 A09 6809 Assembler V1.62 Page 1
+This is the sub-title
+
+                              
+ F000                         RMB     $0010
+                              
+
+
+
+
+                              
+ F010 0123456789ABCD          FCB     $01, $23, $45, $67, $89, $AB, $CD, $EF 
+ F017 EF
+                              
+                              NAM     This is the title or TTL     
+                                
+ F018 0123456789ABCD          FDB     $0123, $4567, $89AB, $CDEF
+ F01F EF
+                              
+                              STTL    This is the sub-title
+                              
+ F020 416E7920746578          FCC     'Any text'
+ F027 74
+                              
+                      ;ERRMSG  ERR     Custom error message
+                              
+ 0000                 LABEL:  EQU     $00
+                              
+                              
+ F028 12                      NOP
+                              
+ 0123                 SETL:   SET     $0123
+
+                      ; Text from the include.txt file
+
+ F029 12                      NOP     ; included nop
+                              
+                              
+                               
+                      RLIST2  REG     A,B,Y,U,DP
+
+                              OPT     PAG
+                      ;        PAG enable page formatting and numbering 
+                      ;        NOP* disable pagination 
+                      ;        CON print conditionally skipped code 
+                      ;        NOC* suppress conditional code printing 
+                      ;        MAC* print macro calling lines 
+                      ;        NOM suppress printing of macro calls 
+                      ;        EXP print macro expansion lines 
+                      ;        NOE* Suppress macro expansion printing
+
+
+                              END     
+
+
+This is the title or TTL         2025-06-11 A09 6809 Assembler V1.62 Page 2
+This is the sub-title
+
+SYMBOL TABLE
+     LABEL 00 0000    RLIST2 14 006E      SETL 01 0123
+3 SYMBOLS
+
+0 error(s), 0 warning(s)
