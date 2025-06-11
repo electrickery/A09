@@ -25,9 +25,17 @@
         ADDW    [$0123]         ; Indexed
         ADDW    >$0123          ; Extended
     
-;        AIM    $01              ; Direct DP-page
+        AIM    #$3F,4,U         ; Direct DP-page
 ;        AIM    [$0123]          ; Indexed
 ;        AIM    >$0123           ; Extended
+        AIM    #$7F,<$0123      ; Extended
+        
+        ANDR    D,X             ; Immed.
+        ANDR    Y,U             ; Immed.
+        ANDR    S,PC            ; Immed.
+        ANDR    A,B             ; Immed.
+        ANDR    CC,DP           ; Immed.
+        ANDR    X,D             ; Immed.
 
         ASLD                    ; Inherent
 
@@ -73,19 +81,52 @@
         DIVQ    [$0123]         ; Indexed
         DIVQ    >$0123          ; Extended
 
-;        EIM     $01,4 U             ; Direct DP-page
-;        EIM     [$0123]         ; Indexed
-;        EIM     >$0123          ; Extended
+        EIM     #$3F,4,U        ; Direct DP-page
+;        EIM     #$3F,4,[$01]     ; Indexed
+;        EIM     #$3F,4,>$0123    ; Extended
 
         EORD    #$0123          ; Immed.
         EORD    $01             ; Direct DP-page
         EORD    [$0123]         ; Indexed
         EORD    >$0123          ; Extended
+        
+        EORR    D,X             ; Immed.
+        EORR    Y,U             ; Immed.
+        EORR    S,PC            ; Immed.
+        EORR    A,B             ; Immed.
+        EORR    CC,DP           ; Immed.
+        EORR    X,D             ; Immed.
+        
+        EXG     D,X             ; Immed.
+        EXG     Y,U             ; Immed.
+        EXG     S,PC            ; Immed.
+        EXG     A,B             ; Immed.
+        EXG     CC,DP           ; Immed.
+        EXG     X,D             ; Immed.
 
         INCD                    ; Inherent
         INCE                    ; Inherent
         INCF                    ; Inherent
         INCW                    ; Inherent
+        
+        LDD    [,X+]            ; Post-Inc Indirect
+        LDD    [,Y+]            ; Post-Inc Indirect
+        LDY    [,X+]            ; Post-Inc Indirect
+        LDY    [,Y+]            ; Post-Inc Indirect
+        LDD    [,W++]           ; Post-Inc Indirect
+        LDD    [,X++]           ; Post-Inc Indirect
+        LDD    [,Y++]           ; Post-Inc Indirect
+        LDY    [,X++]           ; Post-Inc Indirect
+        LDY    [,Y++]           ; Post-Inc Indirect
+        LDD    [,-X]            ; Post-Inc Indirect
+        LDD    [,-Y]            ; Post-Inc Indirect
+        LDY    [,-X]            ; Post-Inc Indirect
+        LDY    [,-Y]            ; Post-Inc Indirect
+        LDD    [,--W]           ; Post-Inc Indirect
+        LDD    [,--X]           ; Post-Inc Indirect
+        LDD    [,--Y]           ; Post-Inc Indirect
+        LDY    [,--X]           ; Post-Inc Indirect
+        LDY    [,--Y]           ; Post-Inc Indirect
         
         LDE     #$0123          ; Immed.
         LDE     $01             ; Direct DP-page
@@ -97,10 +138,22 @@
         LDF     [$0123]         ; Indexed
         LDF     >$0123          ; Extended
         
-        LDQ     #$0123          ; Immed.
+        LDQ     #$01234567          ; Immed.
         LDQ     $01             ; Direct DP-page
         LDQ     [$0123]         ; Indexed
         LDQ     >$0123          ; Extended
+        
+        
+        LDW     [,X+]           ; Post-Inc Indirect
+        LDW     [,Y+]           ; Post-Inc Indirect
+        LDW     [,W++]          ; Post-Inc Indirect
+        LDW     [,X++]          ; Post-Inc Indirect
+        LDW     [,Y++]          ; Post-Inc Indirect
+        LDW     [,-X]           ; Post-Inc Indirect
+        LDW     [,-Y]           ; Post-Inc Indirect
+        LDW     [,--W]          ; Post-Inc Indirect
+        LDW     [,--X]          ; Post-Inc Indirect
+        LDW     [,--Y]          ; Post-Inc Indirect
         
         LDW     #$0123          ; Immed.
         LDW     $01             ; Direct DP-page
@@ -111,7 +164,14 @@
         LDMD    $01             ; Direct DP-page   ????
 ;        LDMD   [$0123]         ; Indexed
         LDMD    >$0123          ; Extended         ????
-
+        
+        LDQ     #$0123          ; Immed.
+        LDQ     $01             ; Direct DP-page
+        LDQ     [$0123]         ; Indexed
+        LDQ     >$0123          ; Extended
+        
+        LSLD                    ; Inherent
+        
         LSRD                    ; Inherent
 
         LSRW                    ; Inherent
@@ -123,37 +183,54 @@
 
         NEGD                    ; Inherent
         
-;        OIM     $01             ; Direct DP-page
-;        OIM     [$0123]         ; Indexed
-;        OIM     >$0123          ; Extended
+        OIM     #$C0,4,U         ; Direct DP-page
+;        OIM     [$0123],4,U         ; Indexed
+;        OIM     >$0123,4,U          ; Extended
         
         ORD     #$0123          ; Immed.
         ORD     $01             ; Direct DP-page
         ORD     [$0123]         ; Indexed
         ORD     >$0123          ; Extended
-
-        PSHSW   #$0123          ; Immed.
-
-        PSHUW   #$0123          ; Immed.
         
-        PULSW   #$0123          ; Immed.
+        ORR     D,X             ; Immed.
+        ORR     Y,U             ; Immed.
+        ORR     S,PC            ; Immed.
+        ORR     A,B             ; Immed.
+        ORR     CC,DP           ; Immed.
+        ORR     X,D             ; Immed.
         
-        PULUW   #$0123          ; Immed.
 
-        ROLD    #$0123          ; Immed.
+        PSHSW                   ; Inherent
 
-        ROLW    #$0123          ; Immed.
+        PSHUW                   ; Inherent
+        
+        PULSW                   ; Inherent
+        
+        PULUW                   ; Inherent
 
-        RORD    #$0123          ; Immed.
+        ROLD    #$0123          ; Inherent
 
-        RORW    #$0123          ; Immed.
+        ROLW    #$0123          ; Inherent
+
+        RORD    #$0123          ; Inherent
+
+        RORW    #$0123          ; Inherent
 
         SBCD    #$0123          ; Immed.
         SBCD    $01             ; Direct DP-page
         SBCD    [$0123]         ; Indexed
         SBCD    >$0123          ; Extended
         
+        SBCR    D,X             ; Immed.
+        SBCR    Y,U             ; Immed.
+        SBCR    S,PC            ; Immed.
+        SBCR    A,B             ; Immed.
+        SBCR    CC,DP           ; Immed.
+        SBCR    X,D             ; Immed.
+        
         SEXW                    ; Inherent
+        
+        STBT    A,4,5,$3F        ; Direct DP-page
         
         STE     $01             ; Direct DP-page
         STE     [$0123]         ; Indexed
@@ -185,16 +262,28 @@
         SUBF    [$0123]         ; Indexed
         SUBF    >$0123          ; Extended
 
-;        SUBW    #$0123          ; Immed.
-;        SUBW    $01             ; Direct DP-page
-;        SUBW    [$0123]         ; Indexed
-;        SUBW    >$0123          ; Extended
+        SUBR    D,X             ; Immed.
+        SUBR    Y,U             ; Immed.
+        SUBR    S,PC            ; Immed.
+        SUBR    A,B             ; Immed.
+        SUBR    CC,DP           ; Immed.
+        SUBR    X,D             ; Immed.
+
+        TFM     X+,Y+           ; Immed.
+        TFM     U-,S-           ; Immed.
+;        TFM     D+,X             Immed.   ???
+        TFM     Y,U+            ; Immed.
+
+        TFR     D,X                ; Immed.
+        TFR     Y,U                ; Immed.
+        TFR     S,PC               ; Immed.
+        TFR     A,B                ; Immed.
+        TFR     CC,DP              ; Immed.
+        TFR     X,D                ; Immed.
 
         TIM     #$3F,4,U
-;        TIM     >$23,4,U
-;        TIM     $01             ; Direct DP-page
-;        TIM     [$0123]         ; Indexed
-;        TIM     >$0123          ; Extended
+        TIM     #$23,6,U
+        TIM	#$46,2
 
         TSTD                    ; Inherent
         TSTE                    ; Inherent
@@ -202,18 +291,18 @@
         TSTW                    ; Inherent
         
         ; operands: destination register, source bit, destination bit, source address.
-        BAND    A, 0, 4, $23    ; Immed.   
-        
-        BIAND   A, 0, 4, $23    ; Immed.
-        
-        BOR     A, 0, 4, $23    ; Immed.
-        
-        BIOR    A, 0, 4, $23    ; Immed.
-        
-        BEOR    A, 0, 4, $23    ; Immed.
-        
-        BIEOR    A, 0, 4, $23   ; Immed.
-        
-;        LDBT    #$23          ; Immed.
-        
-;        STBT    $23          ; Immed.
+        BAND    A,0,4,$23       ; Immed.   
+
+        BIAND   A,0,4,$23       ; Immed.
+
+        BOR     A,0,4,$23       ; Immed.
+
+        BIOR    A,0,4,$23       ; Immed.
+
+        BEOR    A,0,4,$23       ; Immed.
+
+        BIEOR   A,0,4,$23       ; Immed.
+
+        LDBT    A,5,1,$40       ; Immed.
+
+        STBT    A,5,1,$40       ; Immed.

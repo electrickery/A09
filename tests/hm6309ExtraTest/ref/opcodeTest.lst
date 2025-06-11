@@ -25,199 +25,288 @@
  E035 10AB9F0123              ADDW    [$0123]         ; Indexed
  E03A 10BB0123                ADDW    >$0123          ; Extended
                           
-                      ;        AIM    $01              ; Direct DP-page
+ E03E 623F44                  AIM    #$3F,4,U         ; Direct DP-page
                       ;        AIM    [$0123]          ; Indexed
                       ;        AIM    >$0123           ; Extended
-
- E03E 1048                    ASLD                    ; Inherent
-
- E040 1047                    ASRD                    ; Inherent
+ E041 027F23                  AIM    #$7F,<$0123      ; Extended
                               
- E042 104F                    CLRD                    ; Inherent
- E044 114F                    CLRE                    ; Inherent
- E046 115F                    CLRF                    ; Inherent
- E048 105F                    CLRW                    ; Inherent
+ E044 103401                  ANDR    D,X             ; Immed.
+ E047 103423                  ANDR    Y,U             ; Immed.
+ E04A 103445                  ANDR    S,PC            ; Immed.
+ E04D 103489                  ANDR    A,B             ; Immed.
+ E050 1034AB                  ANDR    CC,DP           ; Immed.
+ E053 103410                  ANDR    X,D             ; Immed.
 
- E04A 118123                  CMPE    #$0123          ; Immed.
- E04D 119101                  CMPE    $01             ; Direct DP-page
- E050 11A19F0123              CMPE    [$0123]         ; Indexed
- E055 11B10123                CMPE    >$0123          ; Extended
+ E056 1048                    ASLD                    ; Inherent
 
- E059 11C123                  CMPF    #$0123          ; Immed.
- E05C 11D101                  CMPF    $01             ; Direct DP-page
- E05F 11E19F0123              CMPF    [$0123]         ; Indexed
- E064 11F10123                CMPF    >$0123          ; Extended
-
- E068 10810123                CMPW    #$0123          ; Immed.
- E06C 109101                  CMPW    $01             ; Direct DP-page
- E06F 10A19F0123              CMPW    [$0123]         ; Indexed
- E074 10B10123                CMPW    >$0123          ; Extended
-
- E078 1043                    COMD                    ; Inherent
- E07A 1143                    COME                    ; Inherent
- E07C 1153                    COMF                    ; Inherent
- E07E 1053                    COMW                    ; Inherent
+ E058 1047                    ASRD                    ; Inherent
                               
- E080 104A                    DECD                    ; Inherent
- E082 114A                    DECE                    ; Inherent
- E084 115A                    DECF                    ; Inherent
- E086 105A                    DECW                    ; Inherent
+ E05A 104F                    CLRD                    ; Inherent
+ E05C 114F                    CLRE                    ; Inherent
+ E05E 115F                    CLRF                    ; Inherent
+ E060 105F                    CLRW                    ; Inherent
+
+ E062 118123                  CMPE    #$0123          ; Immed.
+ E065 119101                  CMPE    $01             ; Direct DP-page
+ E068 11A19F0123              CMPE    [$0123]         ; Indexed
+ E06D 11B10123                CMPE    >$0123          ; Extended
+
+ E071 11C123                  CMPF    #$0123          ; Immed.
+ E074 11D101                  CMPF    $01             ; Direct DP-page
+ E077 11E19F0123              CMPF    [$0123]         ; Indexed
+ E07C 11F10123                CMPF    >$0123          ; Extended
+
+ E080 10810123                CMPW    #$0123          ; Immed.
+ E084 109101                  CMPW    $01             ; Direct DP-page
+ E087 10A19F0123              CMPW    [$0123]         ; Indexed
+ E08C 10B10123                CMPW    >$0123          ; Extended
+
+ E090 1043                    COMD                    ; Inherent
+ E092 1143                    COME                    ; Inherent
+ E094 1153                    COMF                    ; Inherent
+ E096 1053                    COMW                    ; Inherent
+                              
+ E098 104A                    DECD                    ; Inherent
+ E09A 114A                    DECE                    ; Inherent
+ E09C 115A                    DECF                    ; Inherent
+ E09E 105A                    DECW                    ; Inherent
                              
- E088 118D23                  DIVD    #$0123          ; Immed.
- E08B 119D01                  DIVD    $01             ; Direct DP-page
- E08E 11AD9F0123              DIVD    [$0123]         ; Indexed
- E093 11BD0123                DIVD    >$0123          ; Extended
+ E0A0 118D23                  DIVD    #$0123          ; Immed.
+ E0A3 119D01                  DIVD    $01             ; Direct DP-page
+ E0A6 11AD9F0123              DIVD    [$0123]         ; Indexed
+ E0AB 11BD0123                DIVD    >$0123          ; Extended
 
- E097 118E0123                DIVQ    #$0123          ; Immed.
- E09B 119E01                  DIVQ    $01             ; Direct DP-page
- E09E 11AE9F0123              DIVQ    [$0123]         ; Indexed
- E0A3 11BE0123                DIVQ    >$0123          ; Extended
+ E0AF 118E0123                DIVQ    #$0123          ; Immed.
+ E0B3 119E01                  DIVQ    $01             ; Direct DP-page
+ E0B6 11AE9F0123              DIVQ    [$0123]         ; Indexed
+ E0BB 11BE0123                DIVQ    >$0123          ; Extended
 
-                      ;        EIM     $01,4 U             ; Direct DP-page
-                      ;        EIM     [$0123]         ; Indexed
-                      ;        EIM     >$0123          ; Extended
+ E0BF 653F44                  EIM     #$3F,4,U        ; Direct DP-page
+                      ;        EIM     #$3F,4,[$01]     ; Indexed
+                      ;        EIM     #$3F,4,>$0123    ; Extended
 
- E0A7 10880123                EORD    #$0123          ; Immed.
- E0AB 109801                  EORD    $01             ; Direct DP-page
- E0AE 10A89F0123              EORD    [$0123]         ; Indexed
- E0B3 10B80123                EORD    >$0123          ; Extended
+ E0C2 10880123                EORD    #$0123          ; Immed.
+ E0C6 109801                  EORD    $01             ; Direct DP-page
+ E0C9 10A89F0123              EORD    [$0123]         ; Indexed
+ E0CE 10B80123                EORD    >$0123          ; Extended
+                              
+ E0D2 103601                  EORR    D,X             ; Immed.
+ E0D5 103623                  EORR    Y,U             ; Immed.
+ E0D8 103645                  EORR    S,PC            ; Immed.
+ E0DB 103689                  EORR    A,B             ; Immed.
+ E0DE 1036AB                  EORR    CC,DP           ; Immed.
+ E0E1 103610                  EORR    X,D             ; Immed.
+                              
+ E0E4 1E01                    EXG     D,X             ; Immed.
+ E0E6 1E23                    EXG     Y,U             ; Immed.
+ E0E8 1E45                    EXG     S,PC            ; Immed.
+ E0EA 1E89                    EXG     A,B             ; Immed.
+ E0EC 1EAB                    EXG     CC,DP           ; Immed.
+ E0EE 1E10                    EXG     X,D             ; Immed.
 
- E0B7 104C                    INCD                    ; Inherent
- E0B9 114C                    INCE                    ; Inherent
- E0BB 115C                    INCF                    ; Inherent
- E0BD 105C                    INCW                    ; Inherent
+ E0F0 104C                    INCD                    ; Inherent
+ E0F2 114C                    INCE                    ; Inherent
+ E0F4 115C                    INCF                    ; Inherent
+ E0F6 105C                    INCW                    ; Inherent
                               
- E0BF 118623                  LDE     #$0123          ; Immed.
- E0C2 119601                  LDE     $01             ; Direct DP-page
- E0C5 11A69F0123              LDE     [$0123]         ; Indexed
- E0CA 11B60123                LDE     >$0123          ; Extended
+ E0F8 EC90                    LDD    [,X+]            ; Post-Inc Indirect
+ E0FA ECB0                    LDD    [,Y+]            ; Post-Inc Indirect
+ E0FC 10AE90                  LDY    [,X+]            ; Post-Inc Indirect
+ E0FF 10AEB0                  LDY    [,Y+]            ; Post-Inc Indirect
+ E102 ECB0                    LDD    [,W++]           ; Post-Inc Indirect
+ E104 EC91                    LDD    [,X++]           ; Post-Inc Indirect
+ E106 ECB1                    LDD    [,Y++]           ; Post-Inc Indirect
+ E108 10AE91                  LDY    [,X++]           ; Post-Inc Indirect
+ E10B 10AEB1                  LDY    [,Y++]           ; Post-Inc Indirect
+ E10E EC92                    LDD    [,-X]            ; Post-Inc Indirect
+ E110 ECB2                    LDD    [,-Y]            ; Post-Inc Indirect
+ E112 10AE92                  LDY    [,-X]            ; Post-Inc Indirect
+ E115 10AEB2                  LDY    [,-Y]            ; Post-Inc Indirect
+ E118 EC90                    LDD    [,--W]           ; Post-Inc Indirect
+ E11A EC93                    LDD    [,--X]           ; Post-Inc Indirect
+ E11C ECB3                    LDD    [,--Y]           ; Post-Inc Indirect
+ E11E 10AE93                  LDY    [,--X]           ; Post-Inc Indirect
+ E121 10AEB3                  LDY    [,--Y]           ; Post-Inc Indirect
                               
- E0CE 11C623                  LDF     #$0123          ; Immed.
- E0D1 11D601                  LDF     $01             ; Direct DP-page
- E0D4 11E69F0123              LDF     [$0123]         ; Indexed
- E0D9 11F60123                LDF     >$0123          ; Extended
+ E124 118623                  LDE     #$0123          ; Immed.
+ E127 119601                  LDE     $01             ; Direct DP-page
+ E12A 11A69F0123              LDE     [$0123]         ; Indexed
+ E12F 11B60123                LDE     >$0123          ; Extended
                               
- E0DD CD00000123              LDQ     #$0123          ; Immed.
- E0E2 10DC01                  LDQ     $01             ; Direct DP-page
- E0E5 10EC9F0123              LDQ     [$0123]         ; Indexed
- E0EA 10FC0123                LDQ     >$0123          ; Extended
+ E133 11C623                  LDF     #$0123          ; Immed.
+ E136 11D601                  LDF     $01             ; Direct DP-page
+ E139 11E69F0123              LDF     [$0123]         ; Indexed
+ E13E 11F60123                LDF     >$0123          ; Extended
                               
- E0EE 10860123                LDW     #$0123          ; Immed.
- E0F2 109601                  LDW     $01             ; Direct DP-page
- E0F5 10A69F0123              LDW     [$0123]         ; Indexed
- E0FA 10B60123                LDW     >$0123          ; Extended
+ E142 CD01234567              LDQ     #$01234567          ; Immed.
+ E147 10DC01                  LDQ     $01             ; Direct DP-page
+ E14A 10EC9F0123              LDQ     [$0123]         ; Indexed
+ E14F 10FC0123                LDQ     >$0123          ; Extended
                               
- E0FE 113D23                  LDMD    #$0123          ; Immed.
- E101 113D01                  LDMD    $01             ; Direct DP-page   ????
+                              
+ E153 10A690                  LDW     [,X+]           ; Post-Inc Indirect
+ E156 10A6B0                  LDW     [,Y+]           ; Post-Inc Indirect
+ E159 10A6B0                  LDW     [,W++]          ; Post-Inc Indirect
+ E15C 10A691                  LDW     [,X++]          ; Post-Inc Indirect
+ E15F 10A6B1                  LDW     [,Y++]          ; Post-Inc Indirect
+ E162 10A692                  LDW     [,-X]           ; Post-Inc Indirect
+ E165 10A6B2                  LDW     [,-Y]           ; Post-Inc Indirect
+ E168 10A690                  LDW     [,--W]          ; Post-Inc Indirect
+ E16B 10A693                  LDW     [,--X]          ; Post-Inc Indirect
+ E16E 10A6B3                  LDW     [,--Y]          ; Post-Inc Indirect
+                              
+ E171 10860123                LDW     #$0123          ; Immed.
+ E175 109601                  LDW     $01             ; Direct DP-page
+ E178 10A69F0123              LDW     [$0123]         ; Indexed
+ E17D 10B60123                LDW     >$0123          ; Extended
+                              
+ E181 113D23                  LDMD    #$0123          ; Immed.
+ E184 113D01                  LDMD    $01             ; Direct DP-page   ????
                       ;        LDMD   [$0123]         ; Indexed
- E104 113D23                  LDMD    >$0123          ; Extended         ????
-
- E107 1044                    LSRD                    ; Inherent
-
- E109 1054                    LSRW                    ; Inherent
+ E187 113D23                  LDMD    >$0123          ; Extended         ????
                               
- E10B 118F0123                MULD    #$0123          ; Immed.
- E10F 119F01                  MULD    $01             ; Direct DP-page
- E112 11AF9F0123              MULD    [$0123]         ; Indexed
- E117 11BF0123                MULD    >$0123          ; Extended
-
- E11B 1040                    NEGD                    ; Inherent
+ E18A CD00000123              LDQ     #$0123          ; Immed.
+ E18F 10DC01                  LDQ     $01             ; Direct DP-page
+ E192 10EC9F0123              LDQ     [$0123]         ; Indexed
+ E197 10FC0123                LDQ     >$0123          ; Extended
                               
-                      ;        OIM     $01             ; Direct DP-page
-                      ;        OIM     [$0123]         ; Indexed
-                      ;        OIM     >$0123          ; Extended
+ E19B 1048                    LSLD                    ; Inherent
                               
- E11D 108A0123                ORD     #$0123          ; Immed.
- E121 109A01                  ORD     $01             ; Direct DP-page
- E124 10AA9F0123              ORD     [$0123]         ; Indexed
- E129 10BA0123                ORD     >$0123          ; Extended
+ E19D 1044                    LSRD                    ; Inherent
 
- E12D 1038                    PSHSW   #$0123          ; Immed.
-
- E12F 103A                    PSHUW   #$0123          ; Immed.
+ E19F 1054                    LSRW                    ; Inherent
                               
- E131 1039                    PULSW   #$0123          ; Immed.
+ E1A1 118F0123                MULD    #$0123          ; Immed.
+ E1A5 119F01                  MULD    $01             ; Direct DP-page
+ E1A8 11AF9F0123              MULD    [$0123]         ; Indexed
+ E1AD 11BF0123                MULD    >$0123          ; Extended
+
+ E1B1 1040                    NEGD                    ; Inherent
                               
- E133 103B                    PULUW   #$0123          ; Immed.
-
- E135 1049                    ROLD    #$0123          ; Immed.
-
- E137 1059                    ROLW    #$0123          ; Immed.
-
- E139 1046                    RORD    #$0123          ; Immed.
-
- E13B 1056                    RORW    #$0123          ; Immed.
-
- E13D 10820123                SBCD    #$0123          ; Immed.
- E141 109201                  SBCD    $01             ; Direct DP-page
- E144 10A29F0123              SBCD    [$0123]         ; Indexed
- E149 10B20123                SBCD    >$0123          ; Extended
+ E1B3 61C044                  OIM     #$C0,4,U         ; Direct DP-page
+                      ;        OIM     [$0123],4,U         ; Indexed
+                      ;        OIM     >$0123,4,U          ; Extended
                               
- E14D 14                      SEXW                    ; Inherent
+ E1B6 108A0123                ORD     #$0123          ; Immed.
+ E1BA 109A01                  ORD     $01             ; Direct DP-page
+ E1BD 10AA9F0123              ORD     [$0123]         ; Indexed
+ E1C2 10BA0123                ORD     >$0123          ; Extended
                               
- E14E 119701                  STE     $01             ; Direct DP-page
- E151 11A79F0123              STE     [$0123]         ; Indexed
- E156 11B70123                STE     >$0123          ; Extended
+ E1C6 103501                  ORR     D,X             ; Immed.
+ E1C9 103523                  ORR     Y,U             ; Immed.
+ E1CC 103545                  ORR     S,PC            ; Immed.
+ E1CF 103589                  ORR     A,B             ; Immed.
+ E1D2 1035AB                  ORR     CC,DP           ; Immed.
+ E1D5 103510                  ORR     X,D             ; Immed.
                               
- E15A 11D701                  STF     $01             ; Direct DP-page
- E15D 11E79F0123              STF     [$0123]         ; Indexed
- E162 11F70123                STF     >$0123          ; Extended
+
+ E1D8 1038                    PSHSW                   ; Inherent
+
+ E1DA 103A                    PSHUW                   ; Inherent
                               
- E166 10DD01                  STQ     $01             ; Direct DP-page
- E169 10ED9F0123              STQ     [$0123]         ; Indexed
- E16E 10FD0123                STQ     >$0123          ; Extended
+ E1DC 1039                    PULSW                   ; Inherent
                               
- E172 10DF01                  STS     $01             ; Direct DP-page
- E175 10EF9F0123              STS     [$0123]         ; Indexed
- E17A 10FF0123                STS     >$0123          ; Extended
+ E1DE 103B                    PULUW                   ; Inherent
+
+ E1E0 1049                    ROLD    #$0123          ; Inherent
+
+ E1E2 1059                    ROLW    #$0123          ; Inherent
+
+ E1E4 1046                    RORD    #$0123          ; Inherent
+
+ E1E6 1056                    RORW    #$0123          ; Inherent
+
+ E1E8 10820123                SBCD    #$0123          ; Immed.
+ E1EC 109201                  SBCD    $01             ; Direct DP-page
+ E1EF 10A29F0123              SBCD    [$0123]         ; Indexed
+ E1F4 10B20123                SBCD    >$0123          ; Extended
                               
- E17E 109701                  STW     $01             ; Direct DP-page
- E181 10A79F0123              STW     [$0123]         ; Indexed
- E186 10B70123                STW     >$0123          ; Extended
+ E1F8 103301                  SBCR    D,X             ; Immed.
+ E1FB 103323                  SBCR    Y,U             ; Immed.
+ E1FE 103345                  SBCR    S,PC            ; Immed.
+ E201 103389                  SBCR    A,B             ; Immed.
+ E204 1033AB                  SBCR    CC,DP           ; Immed.
+ E207 103310                  SBCR    X,D             ; Immed.
+                              
+ E20A 14                      SEXW                    ; Inherent
+                              
+ E20B 1137653F                STBT    A,4,5,$3F        ; Direct DP-page
+                              
+ E20F 119701                  STE     $01             ; Direct DP-page
+ E212 11A79F0123              STE     [$0123]         ; Indexed
+ E217 11B70123                STE     >$0123          ; Extended
+                              
+ E21B 11D701                  STF     $01             ; Direct DP-page
+ E21E 11E79F0123              STF     [$0123]         ; Indexed
+ E223 11F70123                STF     >$0123          ; Extended
+                              
+ E227 10DD01                  STQ     $01             ; Direct DP-page
+ E22A 10ED9F0123              STQ     [$0123]         ; Indexed
+ E22F 10FD0123                STQ     >$0123          ; Extended
+                              
+ E233 10DF01                  STS     $01             ; Direct DP-page
+ E236 10EF9F0123              STS     [$0123]         ; Indexed
+ E23B 10FF0123                STS     >$0123          ; Extended
+                              
+ E23F 109701                  STW     $01             ; Direct DP-page
+ E242 10A79F0123              STW     [$0123]         ; Indexed
+ E247 10B70123                STW     >$0123          ; Extended
 
- E18A 118023                  SUBE    #$0123          ; Immed.
- E18D 119001                  SUBE    $01             ; Direct DP-page
- E190 11A09F0123              SUBE    [$0123]         ; Indexed
- E195 11B00123                SUBE    >$0123          ; Extended
+ E24B 118023                  SUBE    #$0123          ; Immed.
+ E24E 119001                  SUBE    $01             ; Direct DP-page
+ E251 11A09F0123              SUBE    [$0123]         ; Indexed
+ E256 11B00123                SUBE    >$0123          ; Extended
 
- E199 11C023                  SUBF    #$0123          ; Immed.
- E19C 11D001                  SUBF    $01             ; Direct DP-page
- E19F 11E09F0123              SUBF    [$0123]         ; Indexed
- E1A4 11F00123                SUBF    >$0123          ; Extended
+ E25A 11C023                  SUBF    #$0123          ; Immed.
+ E25D 11D001                  SUBF    $01             ; Direct DP-page
+ E260 11E09F0123              SUBF    [$0123]         ; Indexed
+ E265 11F00123                SUBF    >$0123          ; Extended
 
-                      ;        SUBW    #$0123          ; Immed.
-                      ;        SUBW    $01             ; Direct DP-page
-                      ;        SUBW    [$0123]         ; Indexed
-                      ;        SUBW    >$0123          ; Extended
+ E269 103201                  SUBR    D,X             ; Immed.
+ E26C 103223                  SUBR    Y,U             ; Immed.
+ E26F 103245                  SUBR    S,PC            ; Immed.
+ E272 103289                  SUBR    A,B             ; Immed.
+ E275 1032AB                  SUBR    CC,DP           ; Immed.
+ E278 103210                  SUBR    X,D             ; Immed.
 
- E1A8 6B3F44                  TIM     #$3F,4,U
-                      ;        TIM     >$23,4,U
-                      ;        TIM     $01             ; Direct DP-page
-                      ;        TIM     [$0123]         ; Indexed
-                      ;        TIM     >$0123          ; Extended
+ E27B 113812                  TFM     X+,Y+           ; Immed.
+ E27E 113934                  TFM     U-,S-           ; Immed.
+                      ;        TFM     D+,X             Immed.   ???
+ E281 113B23                  TFM     Y,U+            ; Immed.
 
- E1AB 104D                    TSTD                    ; Inherent
- E1AD 114D                    TSTE                    ; Inherent
- E1AF 115D                    TSTF                    ; Inherent
- E1B1 105D                    TSTW                    ; Inherent
+ E284 1F01                    TFR     D,X                ; Immed.
+ E286 1F23                    TFR     Y,U                ; Immed.
+ E288 1F45                    TFR     S,PC               ; Immed.
+ E28A 1F89                    TFR     A,B                ; Immed.
+ E28C 1FAB                    TFR     CC,DP              ; Immed.
+ E28E 1F10                    TFR     X,D                ; Immed.
+
+ E290 6B3F44                  TIM     #$3F,4,U
+ E293 6B2346                  TIM     #$23,6,U
+ E296 0B4602                  TIM     #$46,2
+
+ E299 104D                    TSTD                    ; Inherent
+ E29B 114D                    TSTE                    ; Inherent
+ E29D 115D                    TSTF                    ; Inherent
+ E29F 105D                    TSTW                    ; Inherent
                               
                               ; operands: destination register, source bit, 
 destination bit, source address.
- E1B3 11304423                BAND    A, 0, 4, $23    ; Immed.   
-                              
- E1B7 11314423                BIAND   A, 0, 4, $23    ; Immed.
-                              
- E1BB 11324423                BOR     A, 0, 4, $23    ; Immed.
-                              
- E1BF 11334423                BIOR    A, 0, 4, $23    ; Immed.
-                              
- E1C3 11344423                BEOR    A, 0, 4, $23    ; Immed.
-                              
- E1C7 11354423                BIEOR    A, 0, 4, $23   ; Immed.
-                              
-                      ;        LDBT    #$23          ; Immed.
-                              
-                      ;        STBT    $23          ; Immed.
+ E2A1 11304423                BAND    A,0,4,$23       ; Immed.   
+
+ E2A5 11314423                BIAND   A,0,4,$23       ; Immed.
+
+ E2A9 11324423                BOR     A,0,4,$23       ; Immed.
+
+ E2AD 11334423                BIOR    A,0,4,$23       ; Immed.
+
+ E2B1 11344423                BEOR    A,0,4,$23       ; Immed.
+
+ E2B5 11354423                BIEOR   A,0,4,$23       ; Immed.
+
+ E2B9 11366940                LDBT    A,5,1,$40       ; Immed.
+
+ E2BD 11376940                STBT    A,5,1,$40       ; Immed.
 
 SYMBOL TABLE
 0 SYMBOLS
