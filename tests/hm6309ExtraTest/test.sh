@@ -7,6 +7,7 @@ TESTFILE=jaapschSetTest
 FILES="$TESTFILE.lst $TESTFILE.s19"
 
 rm -f out/*
+mkdir -p out
 
 $EXE $TESTFILE.asm -Sout/$TESTFILE.s19 -Lout/$TESTFILE.lst > out/a09out.log 2>&1
 
