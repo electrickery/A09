@@ -25,5 +25,6 @@ done
 
 if [ $DIFFOUND = -1 ] 
 then
-    cat out/$LOG
+    head out/$LOG
+    echo ....`wc -l out/$LOG` lines
 fi
