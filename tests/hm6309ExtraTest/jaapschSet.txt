@@ -1,0 +1,276 @@
+Source: https://www.jaapsch.net/psion/mcmnemal.htm
+
+DEC HEX L T  MNEM.      HINZVC
+=====================================================================================
+ 27 1B  1 1  ABA        X-XXXX   Add B to A
+ 58 3A  1 1  ABX        ------   Add B to X
+
+137 89  2 2  ADCA #     X-XXXX   Add both carry flag and given value to register.
+153 99  2 3  ADCA 0m    X-XXXX
+169 A9  2 4  ADCA d,X   X-XXXX
+185 B9  3 4  ADCA mm    X-XXXX
+201 C9  2 2  ADCB #     X-XXXX
+217 D9  2 3  ADCB 0m    X-XXXX
+233 E9  2 4  ADCB d,X   X-XXXX
+249 F9  3 4  ADCB mm    X-XXXX
+
+139 8B  2 2  ADDA #     X-XXXX   Add given byte value to register.
+155 9B  2 3  ADDA 0m    X-XXXX
+171 AB  2 4  ADDA d,X   X-XXXX
+187 BB  3 4  ADDA mm    X-XXXX
+203 CB  2 2  ADDB #     X-XXXX
+219 DB  2 3  ADDB 0m    X-XXXX
+235 EB  2 4  ADDB d,X   X-XXXX
+251 FB  3 4  ADDB mm    X-XXXX
+195 C3  3 3  ADDD ##    --XXXX   Add given word value to register D.
+211 D3  2 4  ADDD 0m    --XXXX
+227 E3  2 5  ADDD d,X   --XXXX
+243 F3  3 5  ADDD mm    --XXXX
+
+113 71  3 6  AIM #,0m   --XX0-   AND the given byte to byte in memory
+ 97 61  3 7  AIM #,d,X  --XX0-
+132 84  2 2  ANDA #     --XX0-   AND a byte to a register
+148 94  2 3  ANDA 0m    --XX0-
+164 A4  2 4  ANDA d,X   --XX0-
+180 B4  3 4  ANDA mm    --XX0-
+196 C4  2 2  ANDB #     --XX0-
+212 D4  2 3  ANDB 0m    --XX0-
+228 E4  2 4  ANDB d,X   --XX0-
+244 F4  3 4  ANDB mm    --XX0-
+
+104 68  2 6  ASL d,X    --XXXX   Shift one bit to the left arithmetically
+120 78  3 6  ASL mm     --XXXX       C <-- register <- 0
+ 72 48  1 1  ASLA       --XXXX
+ 88 58  1 1  ASLB       --XXXX
+  5 05  1 1  ASLD       --XXXX
+
+103 67  2 6  ASR d,X    --XXXX   Shift one bit to the right arithmetically
+119 77  3 6  ASR mm     --XXXX        --> register -> C
+ 71 47  1 1  ASRA       --XXXX       |____|
+ 87 57  1 1  ASRB       --XXXX
+
+133 85  2 2  BITA #     --XX0-   AND a byte and a register, but ignore result
+149 95  2 3  BITA 0m    --XX0-    except for flags.
+165 A5  2 4  BITA d,X   --XX0-
+181 B5  3 4  BITA mm    --XX0-
+197 C5  2 2  BITB #     --XX0-
+213 D5  2 3  BITB 0m    --XX0-
+229 E5  2 4  BITB d,X   --XX0-
+245 F5  3 4  BITB mm    --XX0-
+
+ 32 20  2 3  BRA r      ------   Branch always
+ 33 21  2 3  BRN r      ------   Branch never
+ 34 22  2 3  BHI r      ------   Branch if higher,        > unsigned integers
+ 35 23  2 3  BLS r      ------   Branch if less,         <= unsigned integers
+ 36 24  2 3  BCC r      ------   Branch if carry clear,  >= unsigned integers
+ 37 25  2 3  BCS r      ------   Branch if carry set,     < unsigned integers
+ 38 26  2 3  BNE r      ------   Branch if not equal,    <>
+ 39 27  2 3  BEQ r      ------   Branch if equal,         =
+ 40 28  2 3  BVC r      ------   Branch if overflow clear
+ 41 29  2 3  BVS r      ------   Branch if overflow set
+ 42 2A  2 3  BPL r      ------   Branch if plus,          + signed integers
+ 43 2B  2 3  BMI r      ------   Branch if minus,         - signed integers
+ 44 2C  2 3  BGE r      ------   Branch if greater/equal,>= signed integers
+ 45 2D  2 3  BLT r      ------   Branch if less than,     < signed integers
+ 46 2E  2 3  BGT r      ------   Branch if greater than, >= signed integers
+ 47 2F  2 3  BLE r      ------   Branch if less/equal,   <= signed integers
+
+141 8D  2 5  BSR r      ------   Branch to a subroutine
+
+ 17 11  1 1  CBA        --XXXX   Compare B to A (i.e. look at A-B)
+129 81  2 2  CMPA #     --XXXX   Compare byte to register
+145 91  2 3  CMPA 0m    --XXXX
+161 A1  2 4  CMPA d,X   --XXXX
+177 B1  3 4  CMPA mm    --XXXX
+193 C1  2 2  CMPB #     --XXXX
+209 D1  2 3  CMPB 0m    --XXXX
+225 E1  2 4  CMPB d,X   --XXXX
+241 F1  3 4  CMPB mm    --XXXX
+140 8C  3 3  CPX ##     --XXXX   Compare word to register X
+156 9C  2 4  CPX 0m     --XXXX
+172 AC  2 5  CPX d,X    --XXXX
+188 BC  3 5  CPX mm     --XXXX
+
+ 12 0C  1 1  CLC        -----0   Clear carry flag
+ 14 0E  1 1  CLI        -0----   Clear interrupt flag, enabling them
+ 10 0A  1 1  CLV        ----0-   Clear overflow flag
+
+111 6F  2 5  CLR d,X    --0100   Clear register or byte in memory, making it 0.
+127 7F  3 5  CLR mm     --0100
+ 79 4F  1 1  CLRA       --0100
+ 95 5F  1 1  CLRB       --0100
+
+ 99 63  2 6  COM d,X    --XX01   Complement register or byte in memory,
+115 73  3 6  COM mm     --XX01    toggling all its bits.
+ 67 43  1 1  COMA       --XX01
+ 83 53  1 1  COMB       --XX01
+
+ 25 19  1 2  DAA        --XXXc   Decimally adjust A to BCD format
+
+106 6A  2 6  DEC d,X    --XXX-   Decrement register or byte in memory
+122 7A  3 6  DEC mm     --XXX-
+ 74 4A  1 1  DECA       --XXX-
+ 90 5A  1 1  DECB       --XXX-
+ 52 34  1 1  DES        ------   Decrement stack pointer
+  9 09  1 1  DEX        ---X--   Decrement X
+
+117 75  3 6  EIM #,0m   --XX0-   XOR the given byte to byte in memory
+101 65  3 7  EIM #,d,X  --XX0-
+136 88  2 2  EORA #     --XX0-   XOR a byte to a register
+152 98  2 3  EORA 0m    --XX0-
+168 A8  2 4  EORA d,X   --XX0-
+184 B8  3 4  EORA mm    --XX0-
+200 C8  2 2  EORB #     --XX0-
+216 D8  2 3  EORB 0m    --XX0-
+232 E8  2 4  EORB d,X   --XX0-
+248 F8  3 4  EORB mm    --XX0-
+
+108 6C  2 6  INC d,X    --XXX-   Increment register or byte in memory
+124 7C  3 6  INC mm     --XXX-
+ 76 4C  1 1  INCA       --XXX-
+ 92 5C  1 1  INCB       --XXX-
+ 49 31  1 1  INS        ------   Increment stack pointer
+  8 08  1 1  INX        ---X--   Increment X
+
+110 6E  2 6  JMP d,X    ------   Jumps to the address X+d
+126 7E  3 3  JMP mm     ------   Jumps to the address mm
+
+157 9D  2 5  JSR 0m     ------   Jumps to a subroutine
+173 AD  2 5  JSR d,X    ------
+189 BD  3 6  JSR mm     ------
+
+134 86  2 2  LDAA #     --XX0-   Loads register with given byte
+150 96  2 3  LDAA 0m    --XX0-
+166 A6  2 4  LDAA d,X   --XX0-
+182 B6  3 4  LDAA mm    --XX0-
+198 C6  2 2  LDAB #     --XX0-
+214 D6  2 3  LDAB 0m    --XX0-
+230 E6  2 4  LDAB d,X   --XX0-
+246 F6  3 4  LDAB mm    --XX0-
+204 CC  3 3  LDD ##     --XX0-   Loads D register with given word
+220 DC  2 4  LDD 0m     --XX0-
+236 EC  2 5  LDD d,X    --XX0-
+252 FC  3 5  LDD mm     --XX0-
+142 8E  3 3  LDS ##     --XX0-   Loads stack pointer with given word
+158 9E  2 4  LDS 0m     --XX0-
+174 AE  2 5  LDS d,X    --XX0-
+190 BE  3 5  LDS mm     --XX0-
+206 CE  3 3  LDX ##     --XX0-   Loads X register with given word
+222 DE  2 4  LDX 0m     --XX0-
+238 EE  2 5  LDX d,X    --XX0-
+254 FE  3 5  LDX mm     --XX0-
+
+100 64  2 6  LSR d,X    --0XXX   Shift one bit to the right logically
+116 74  3 6  LSR mm     --0XXX       0 --> register -> C
+ 68 44  1 1  LSRA       --0XXX
+ 84 54  1 1  LSRB       --0XXX
+  4 04  1 1  LSRD       --0XXX
+
+ 61 3D  1 7  MUL        -----b   Multiply A and B
+
+ 96 60  2 6  NEG d,X    --XXXX   Negate register or byte in memory
+112 70  3 6  NEG mm     --XXXX
+ 64 40  1 1  NEGA       --XXXX
+ 80 50  1 1  NEGB       --XXXX
+
+  1 01  1 1  NOP        ------   Does nothing (except a tiny pause)
+
+114 72  3 6  OIM #,0m   --XX0-   OR the given byte to byte in memory
+ 98 62  3 7  OIM #,d,X  --XX0-
+138 8A  2 2  ORAA #     --XX0-   OR a byte to a register
+154 9A  2 3  ORAA 0m    --XX0-
+170 AA  2 4  ORAA d,X   --XX0-
+186 BA  3 4  ORAA mm    --XX0-
+202 CA  2 2  ORAB #     --XX0-
+218 DA  2 3  ORAB 0m    --XX0-
+234 EA  2 4  ORAB d,X   --XX0-
+250 FA  3 4  ORAB mm    --XX0-
+
+ 54 36  1 3  PSHA       ------   Push register onto stack
+ 55 37  1 3  PSHB       ------
+ 60 3C  1 5  PSHX       ------
+
+ 50 32  1 3  PULA       ------   Pull register from stack
+ 51 33  1 3  PULB       ------
+ 56 38  1 4  PULX       ------
+
+105 69  2 6  ROL d,X    --XXXX   Rotate register or byte in memory left one bit
+121 79  3 6  ROL mm     --XXXX         <-- Register <--
+ 73 49  1 1  ROLA       --XXXX        |                |
+ 89 59  1 1  ROLB       --XXXX         ----->  C ----->
+
+102 66  2 6  ROR d,X    --XXXX   Rotate register or byte in memory right one bit
+118 76  3 6  ROR mm     --XXXX         --> Register -->
+ 70 46  1 1  RORA       --XXXX        |                |
+ 86 56  1 1  RORB       --XXXX         <-----  C <-----
+
+ 59 3B  1 10 RTI        XXXXXX   Return from interrupt routine
+ 57 39  1 5  RTS        ------   Return from subroutine
+
+ 16 10  1 1  SBA        --XXXX   Subtract B from A
+
+130 82  2 2  SBCA #     --XXXX   Subtract both carry flag and given value from
+146 92  2 3  SBCA 0m    --XXXX    register.
+162 A2  2 4  SBCA d,X   --XXXX
+178 B2  3 4  SBCA mm    --XXXX
+194 C2  2 2  SBCB #     --XXXX
+210 D2  2 3  SBCB 0m    --XXXX
+226 E2  2 4  SBCB d,X   --XXXX
+242 F2  3 4  SBCB mm    --XXXX
+
+ 13 0D  1 1  SEC        -----1   Set carry flag
+ 15 0F  1 1  SEI        -1----   Set interrupt flag, disabling them
+ 11 0B  1 1  SEV        ----1-   Set overflow flag
+
+ 26 1A  1 4  SLP        ------   Sleep till next interrupt
+
+151 97  2 3  STAA 0m    --XX0-   Stores byte register at given address
+167 A7  2 4  STAA d,X   --XX0-
+183 B7  3 4  STAA mm    --XX0-
+215 D7  2 3  STAB 0m    --XX0-
+231 E7  2 4  STAB d,X   --XX0-
+247 F7  3 4  STAB mm    --XX0-
+221 DD  2 4  STD 0m     --XX0-   Stores word register D at given address
+237 ED  2 5  STD d,X    --XX0-
+253 FD  3 5  STD mm     --XX0-
+159 9F  2 4  STS 0m     --XX0-   Stores stack pointer at given address
+175 AF  2 5  STS d,X    --XX0-
+191 BF  3 5  STS mm     --XX0-
+223 DF  2 4  STX 0m     --XX0-   Stores word register X at given address
+239 EF  2 5  STX d,X    --XX0-
+255 FF  3 5  STX mm     --XX0-
+
+128 80  2 2  SUBA #     --XXXX   Subtract given byte value from register
+144 90  2 3  SUBA 0m    --XXXX
+160 A0  2 4  SUBA d,X   --XXXX
+176 B0  3 4  SUBA mm    --XXXX
+192 C0  2 2  SUBB #     --XXXX
+208 D0  2 3  SUBB 0m    --XXXX
+224 E0  2 4  SUBB d,X   --XXXX
+240 F0  3 4  SUBB mm    --XXXX
+131 83  3 3  SUBD ##    --XXXX   Subtract given word value from register D
+147 93  2 4  SUBD 0m    --XXXX
+163 A3  2 5  SUBD d,X   --XXXX
+179 B3  3 5  SUBD mm    --XXXX
+
+ 63 3F  1 12 SWI        -1----   Software interrupt, calls ROM routine
+
+ 22 16  1 1  TAB        --XX0-   Transfer the value of A to B
+  6 06  1 1  TAP        XXXXXX   Transfer the value of A to the flag register
+ 23 17  1 1  TBA        --XX0-   Transfer the value of B to A
+  7 07  1 1  TPA        ------   Transfer the value of the flag register to A
+ 48 30  1 1  TSX        ------   Transfer the value of the stack pointer+1 to X
+ 53 35  1 1  TXS        ------   Transfer the value of X-1 to the stack pointer
+
+123 7B  3 4  TIM #,0m   --XX0-   AND the given byte and the byte at the given
+107 6B  3 5  TIM #,d,X  --XX0-    address, ignoring the result except for flags.
+
+  0 00  1 ?  TRAP       -1----   Calls the ROM Trap interrupt routine
+
+109 6D  2 4  TST d,X    --XX00   Test register or byte in memory
+125 7D  3 4  TST mm     --XX00
+ 77 4D  1 1  TSTA       --XX00
+ 93 5D  1 1  TSTB       --XX00
+
+ 62 3E  1 9  WAI        -a----   Wait for external interrupt
+ 24 18  1 2  XGDX       ------   Exchange D and X
