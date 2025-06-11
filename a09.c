@@ -225,8 +225,12 @@
    v1.26  2009-03-14 assembling DOS format files in Loonix works better now
    v1.27  2010-01-20 LPA/NLP options added
    v1.28  2010-04-21 INCD/DECD produced invalid code
+   
+-- Upload to github --
+    
    v1.29  2015-06-19 M01/M02/M03/M08 options added
    v1.30  2015-06-22 PHASE/DEPHASE pseudo-ops added
+
    v1.31  2015-07-15 6301/6303 support added
    v1.32  2015-08-19 FCQ/FQB pseudo-ops added
    v1.33  2015-08-28 Macro problems (found by Bob Grieb) fixed
@@ -322,6 +326,11 @@
                          https://github.com/Arakula/A09/issues/18
                        for details.
    v1.62 2025-01-30 improved line level cleanup and flag handling
+   
+-- Electrickery Additions: --
+   
+   v1.63f 2025-06-10 real cleanup using ccpcheck 
+   * 
 */
 
 #include "a09.h"
@@ -330,7 +339,7 @@
 /* expandfn : expands a file name to full-blown path                         */
 /*****************************************************************************/
 
-char const *expandfn(char const *fn)
+static char const *expandfn(char const *fn)
 {
     #ifdef WIN32
     static char szBuf[_MAX_PATH];           /* allocate big buffer               */
@@ -346,10 +355,10 @@ char const *expandfn(char const *fn)
 /* PageFeed : advances the list file                                         */
 /*****************************************************************************/
 
-void PageFeed()
+static void PageFeed()
 {
     time_t tim;
-    struct tm *ltm;
+    const struct tm *ltm;
 
     time(&tim);
     ltm = localtime(&tim);
@@ -381,7 +390,7 @@ void PageFeed()
 /* putlist : puts something to the list file                                 */
 /*****************************************************************************/
 
-void putlist(const char *szFmt, ...)
+static void putlist(const char *szFmt, ...)
 {
     char szList[1024];                      /* buffer for 1k list output         */
     char *p;
@@ -411,13 +420,12 @@ void putlist(const char *szFmt, ...)
           if ((nCurCol >= nColsPerLine * 3 / 4) && (*p == ' '))
           {
             int i;                          /* look whether more delimiters      */
-            char c;
             for (i = nCurCol + 1; i < nColsPerLine; i++)
-              {
-              c = p[i - nCurCol];
+            {
+              char c = p[i - nCurCol];
               if ((c == '\t') || (c == ' ') || (!c))
                 break;
-              }
+            }
             if (i >= nColsPerLine)          /* if no more delimiters,            */
               nCurCol = nColsPerLine;       /* make sure to advance to new line  */
           }
@@ -436,7 +444,7 @@ void putlist(const char *szFmt, ...)
 /* findop : finds a mnemonic in table using binary search                    */
 /*****************************************************************************/
 
-struct oprecord * findop(char * nm)
+static struct oprecord * findop(const char * nm)
 {
     int lo,hi,i,s;
 
@@ -462,10 +470,10 @@ struct oprecord * findop(char * nm)
 /* findlocal : finds a local symbol table record                             */
 /*****************************************************************************/
 
-struct symrecord * findlocal(struct symrecord *sym, char forward, int insert)
+static struct symrecord * findlocal(struct symrecord *sym, char forward, int insert)
 {
     static struct symrecord empty = {"", SYMCAT_EMPTYLOCAL, 0, {0}};
-    int lo,hi,i,j,s;
+    int lo,hi,i,s; // j,
 
     if ((!sym) ||                           /* if no main symbol for that        */
         ((!insert) &&                       /* or not inserting, but             */
@@ -529,7 +537,7 @@ struct symrecord * findlocal(struct symrecord *sym, char forward, int insert)
         exit(4);
         }
       sym->cat = SYMCAT_LOCALLABEL;
-      for (j = lcltable.counter; j > i; j--)
+      for (int j = lcltable.counter; j > i; j--)
         lcltable.rec[j] = lcltable.rec[j - 1];
       lcltable.counter++;
       strcpy(lcltable.rec[i].name, sym->name);
@@ -568,9 +576,9 @@ struct symrecord * findlocal(struct symrecord *sym, char forward, int insert)
 /*           uses binary search, maintains sorted table                      */
 /*****************************************************************************/
 
-struct symrecord * findsym (char * nm, int insert)
+static struct symrecord * findsym (const char * nm, int insert)
 {
-    int lo,hi,i,j,s;
+    int lo,hi,i,s;  //j, 
     char islocal = 0, forward = 0;
     char name[MAXIDLEN + 1] = "";
                                             /* copy name to internal buffer      */
@@ -634,10 +642,10 @@ struct symrecord * findsym (char * nm, int insert)
         }
       if (commonsym >= symtable.rec + i)
         commonsym++;
-      for (j = 0; j < symtable.counter; j++)
+      for (int j = 0; j < symtable.counter; j++)
         if (symtable.rec[j].u.parent >= symtable.rec + i)
           symtable.rec[j].u.parent++;
-      for (j = symtable.counter; j > i; j--)
+      for (int j = symtable.counter; j > i; j--)
         symtable.rec[j] = symtable.rec[j-1];
       symtable.counter++;
       strcpy(symtable.rec[i].name, name);
@@ -657,7 +665,7 @@ struct symrecord * findsym (char * nm, int insert)
 /* findsymat : finds 1st symbol for a given address                          */
 /*****************************************************************************/
 
-char *findsymat(unsigned short addr)
+static char *findsymat(unsigned short addr)
 {
     /* since the symbol table is sorted by name, this needs a sequential search  */
     int i;
@@ -676,7 +684,7 @@ char *findsymat(unsigned short addr)
 /* isValidNameChar : returns whether char is a valid name char               */
 /*****************************************************************************/
 
-char isValidNameChar(char c, char cFirst)
+static char isValidNameChar(char c, char cFirst)
 {
     if (cFirst)                             /* first char of a name is special   */
     {
@@ -706,7 +714,6 @@ char isValidNameChar(char c, char cFirst)
       return 1;
     if (!(dwOptions & OPTION_TSC) &&        /* non-TSC and non-GNU allows more:  */
         (c == '.' ||                        /* . $ _ are allowed in names, too   */
-         c == '_' ||
          c == '$'))
       return 1;
 
@@ -717,19 +724,19 @@ char isValidNameChar(char c, char cFirst)
 /* parsename : parses a name from a text string                              */
 /*****************************************************************************/
 
-void parsename(char *srcptr, char **nextptr)
+static void parsename(char *srcptr, char **nextptr)
 {
     int i = 0;
-    char c, cValid, cFirst = 2;
+    char cFirst = 2;
 
     while (1)
     {
-      c = *srcptr++;
+      char c = *srcptr++;
       if ((!(dwOptions & OPTION_TSC)) &&    /* TSC Assembler is case-sensitive   */
           (!(dwOptions & OPTION_GAS)) &&    /* GNU Assembler is case-sensitive   */
           (c >= 'a' && c <= 'z'))
         c -= ('a' - 'A');
-      cValid = isValidNameChar(c, cFirst);  /* check for validity                */
+      char cValid = isValidNameChar(c, cFirst);  /* check for validity                */
       if (!cValid)                          /* if invalid character encountered  */
         break;                              /* stop here                         */
 
@@ -751,7 +758,7 @@ void parsename(char *srcptr, char **nextptr)
 /* parsedecimal : parses a decimal number                                    */
 /*****************************************************************************/
 
-long parsedecimal(char *srcptr, char **nextptr)
+static long parsedecimal(char *srcptr, char **nextptr)
 {
     char c;
     long t = 0, mult = 1;
@@ -785,7 +792,7 @@ long parsedecimal(char *srcptr, char **nextptr)
 /* parsehex : parses a hex number                                            */
 /*****************************************************************************/
 
-long parsehex(char *srcptr, char **nextptr)
+static long parsehex(char *srcptr, char **nextptr)
 {
     char c;
     int i = 0;
@@ -821,7 +828,7 @@ long parsehex(char *srcptr, char **nextptr)
 /* parsechar : parses a character                                            */
 /*****************************************************************************/
 
-long parsechar(char *srcptr, char **nextptr)
+static long parsechar(char *srcptr, char **nextptr)
 {
     long t = *++srcptr;                     /* get char skipping '               */
     if (nextptr && t)
@@ -838,7 +845,7 @@ long parsechar(char *srcptr, char **nextptr)
 /* parsebin : parses a binary value                                          */
 /*****************************************************************************/
 
-long parsebin(char *srcptr, char **nextptr)
+static long parsebin(char *srcptr, char **nextptr)
 {
     char c;
     int i = 0;
@@ -869,7 +876,7 @@ long parsebin(char *srcptr, char **nextptr)
 /* parseoct : parses an octal value                                          */
 /*****************************************************************************/
 
-long parseoct(char *srcptr, char **nextptr)
+static long parseoct(char *srcptr, char **nextptr)
 {
     char c;
     int i = 0;
@@ -900,12 +907,11 @@ long parseoct(char *srcptr, char **nextptr)
 /* parsestring : parses a string into a buffer                               */
 /*****************************************************************************/
 
-char * parsestring(char *srcptr, char *dest, int nlen, char **nextptr)
+static char * parsestring(char *srcptr, char *dest, int nlen, char **nextptr)
 {
-    char *s = srcptr;
+    const char *s = srcptr;
     char *d = dest;
     int nInString = 0;
-    char c;
 
     if (*srcptr == '\'' || *srcptr == '\"')
     {
@@ -923,7 +929,7 @@ char * parsestring(char *srcptr, char *dest, int nlen, char **nextptr)
         srcptr++;
         break;
       }
-      c = *srcptr++;
+      char c = *srcptr++;
       if (!nInString && c >= 'a' && c <= 'z')
         c -= 32;
       *d++ = c;
@@ -939,7 +945,7 @@ char * parsestring(char *srcptr, char *dest, int nlen, char **nextptr)
 /* parsespace : parses whitespace characters                                 */
 /*****************************************************************************/
 
-char parsespace(char *srcptr, char **nextptr)
+static char parsespace(char *srcptr, char **nextptr)
 {
     char c, lblk = 0;
     while ((c = *srcptr) == ' ' || c == '\t')
@@ -956,7 +962,7 @@ char parsespace(char *srcptr, char **nextptr)
 /* settext : sets a text symbol                                              */
 /*****************************************************************************/
 
-int settext(char *namebuf, char *text)
+static int settext(const char *namebuf, char *text)
 {
     struct symrecord *lp = findsym(namebuf, 1);
     char iname[sizeof(lp->name)];
@@ -1035,7 +1041,7 @@ int settext(char *namebuf, char *text)
 /* outsymtable : prints the symbol table                                     */
 /*****************************************************************************/
 
-void outsymtable()
+static void outsymtable()
 {
     int i,j = 0;
 
@@ -1093,7 +1099,7 @@ void outsymtable()
 /* outreltable : prints the relocation table                                 */
 /*****************************************************************************/
 
-void outreltable()
+static void outreltable()
 {
     int i,j = 0;
 
@@ -1129,7 +1135,7 @@ void outreltable()
 /* outtexttable : prints the text table                                      */
 /*****************************************************************************/
 
-void outtexttable()
+static void outtexttable()
 {
     int i,j = 0;
 
@@ -1161,7 +1167,7 @@ void outtexttable()
 /* findreg : finds a register per name                                       */
 /*****************************************************************************/
 
-struct regrecord * findreg(char *nm)
+static struct regrecord * findreg(const char *nm)
 {
     int i;
     for (i = 0; regtable[i].name != NULL; i++)
@@ -1176,7 +1182,7 @@ struct regrecord * findreg(char *nm)
 /* findreg63 : finds a register per name for HD63 operations                 */
 /*****************************************************************************/
 
-struct regrecord * findreg63(char *nm)
+static struct regrecord * findreg63(const char *nm)
 {
     int i;
     for (i = 0; i < (sizeof(regtable63) / sizeof(regtable63[0])); i++)
@@ -1191,7 +1197,7 @@ struct regrecord * findreg63(char *nm)
 /* findbitreg : finds a bit transfer register per name (6309 only)           */
 /*****************************************************************************/
 
-struct regrecord * findbitreg(char *nm)
+static struct regrecord * findbitreg(const char *nm)
 {
     int i;
 
@@ -1207,7 +1213,7 @@ struct regrecord * findbitreg(char *nm)
 /* strupr : converts a string to uppercase (crude)                           */
 /*****************************************************************************/
 
-char *strupr(char *name)
+static char *strupr(char *name)
 {
     int i;
     if (!name)
@@ -1222,7 +1228,7 @@ char *strupr(char *name)
 /* addreloc : adds a relocation record to the list                           */
 /*****************************************************************************/
 
-void addreloc(struct relocrecord *p)
+static void addreloc(const struct relocrecord *p)
 {
     struct relocrecord rel = {0};           /* internal copy                     */
 
@@ -1277,7 +1283,7 @@ void addreloc(struct relocrecord *p)
 /* scanname : scans a name from the input buffer                             */
 /*****************************************************************************/
 
-void scanname()
+static void scanname()
 {
     parsename(srcptr, &srcptr);             /* parse with global pointer         */
 }
@@ -1286,7 +1292,7 @@ void scanname()
 /* skipspace : skips whitespace characters                                   */
 /*****************************************************************************/
 
-char skipspace()
+static char skipspace()
 {
     return parsespace(srcptr, &srcptr);
 } 
@@ -1295,7 +1301,7 @@ char skipspace()
 /* scandecimal : scans a decimal number                                      */
 /*****************************************************************************/
 
-long scandecimal()
+static long scandecimal()
 {
     return parsedecimal(srcptr, &srcptr);   /* parse using global pointer        */
 } 
@@ -1304,7 +1310,7 @@ long scandecimal()
 /* scanhex : scans hex number                                                */
 /*****************************************************************************/
 
-long scanhex()
+static long scanhex()
 {
     return parsehex(srcptr, &srcptr);       /* parse using global pointer        */
 }
@@ -1313,7 +1319,7 @@ long scanhex()
 /* scanchar : scan a character                                               */
 /*****************************************************************************/
 
-long scanchar()
+static long scanchar()
 {
     return parsechar(srcptr, &srcptr);      /* parse using global pointer        */
 }
@@ -1322,7 +1328,7 @@ long scanchar()
 /* scanbin : scans a binary value                                            */
 /*****************************************************************************/
 
-long scanbin()
+static long scanbin()
 {
 return parsebin(srcptr, &srcptr);       /* parse using global pointer        */
 }
@@ -1331,7 +1337,7 @@ return parsebin(srcptr, &srcptr);       /* parse using global pointer        */
 /* scanoct : scans an octal value                                            */
 /*****************************************************************************/
 
-long scanoct()
+static long scanoct()
 {
     return parseoct(srcptr, &srcptr);       /* parse using global pointer        */
 }
@@ -1340,7 +1346,7 @@ long scanoct()
 /* scanstring : scans a string into a buffer                                 */
 /*****************************************************************************/
 
-char * scanstring(char *dest, int nlen)
+static char * scanstring(char *dest, int nlen)
 {                                       /* parse using global pointer        */
     return parsestring(srcptr, dest, nlen, &srcptr);
 }
@@ -1350,7 +1356,7 @@ char * scanstring(char *dest, int nlen)
 /* scanlabel : scans a label                                                 */
 /*****************************************************************************/
 
-unsigned short scanlabel(struct relocrecord *pp)
+static unsigned short scanlabel(struct relocrecord *pp)
 {
     struct symrecord * p;
 
@@ -1379,8 +1385,6 @@ unsigned short scanlabel(struct relocrecord *pp)
     #else
     if (((exprcat == EXPRCAT_INTADDR ||
           exprcat == EXPRCAT_PUBLIC) && 
-    //    (unsigned short)(p->value) > (unsigned short)loccounter) ||
-    //    (p->u.flags & SYMFLAG_FORWARD)) ||
         ((p->u.flags & (SYMFLAG_FORWARD | SYMFLAG_PASSED)) == SYMFLAG_FORWARD)) ||
         exprcat == EXPRCAT_EXTADDR)
       certain = 0;
@@ -1404,7 +1408,7 @@ unsigned short scanlabel(struct relocrecord *pp)
 /* isfactorstart : returns whether passed character possibly starts a factor */
 /*****************************************************************************/
 
-int isfactorstart(char c)
+static int isfactorstart(char c)
 {
     if (isalpha(c))
       return 1;
@@ -1427,16 +1431,15 @@ int isfactorstart(char c)
     return 0;
 }
 
-long scanexpr(int, struct relocrecord *);
+static long scanexpr(int, struct relocrecord *);
 
 /*****************************************************************************/
 /* scanfactor : scans an expression factor                                   */
 /*****************************************************************************/
 
-long scanfactor(struct relocrecord *p)
+static long scanfactor(struct relocrecord *p)
 {
     char c;
-    long t;
 
     if (!(dwOptions & OPTION_TSC))
       skipspace();
@@ -1446,7 +1449,7 @@ long scanfactor(struct relocrecord *p)
       return (unsigned short)scanlabel(p);
     else if (isdigit(c))
     {
-      char *locptr = srcptr;                /* watch out for local labels        */
+      const char *locptr = srcptr;                /* watch out for local labels        */
       char caft;
       while ((*locptr >= '0') &&            /* advance to next nonnumeric        */
              (*locptr <= '9'))
@@ -1476,8 +1479,11 @@ long scanfactor(struct relocrecord *p)
           return scandecimal();
       }
     }
-    else switch (c)
+    else 
     {
+      long t; 
+      switch (c)
+      {
       case '*' :
         srcptr++;
         exprcat |= EXPRCAT_INTADDR;
@@ -1517,7 +1523,8 @@ long scanfactor(struct relocrecord *p)
       case '~' :
         srcptr++;
         exprcat |= EXPRCAT_FIXED;
-        return ~scanfactor(p);           
+        return ~scanfactor(p);   
+      }        
     }
     error |= ERR_EXPR;
     return 0;
@@ -1548,23 +1555,22 @@ long scanfactor(struct relocrecord *p)
 /* scanexpr : scan expression                                                */
 /*****************************************************************************/
 
-long scanexpr(int level, struct relocrecord *pp) /* This is what you call _recursive_ descent!!!*/
+static long scanexpr(int level, struct relocrecord *pp) /* This is what you call _recursive_ descent!!!*/
 {
     long t, u;
-    char oldcat,c,parsing=1;
+    char oldcat,parsing=1; // c,
     struct relocrecord ip = {0}, p = {0};
 
     exprcat = 0;
     if (level == 10)
       return scanfactor(pp);
     t = scanexpr(level + 1, &ip);
-    /* ip.exprcat = exprcat; */
     while (parsing)
     {
       p.sym = NULL;
       if (!(dwOptions & OPTION_TSC))
         skipspace();
-      c = *srcptr++; 
+      char c = *srcptr++; 
       switch(c)
       {
         case '*':
@@ -1732,7 +1738,7 @@ long scanexpr(int level, struct relocrecord *pp) /* This is what you call _recur
 /* isindexreg : returns whether on an index register                         */
 /*****************************************************************************/
 
-int isindexreg()
+static int isindexreg()
 {
     switch (toupper(*srcptr))
     {
@@ -1753,7 +1759,7 @@ int isindexreg()
 /* scanindexreg : scans an index register                                    */
 /*****************************************************************************/
 
-int scanindexreg()
+static int scanindexreg()
 {
     switch (toupper(*srcptr))
     {
@@ -1776,7 +1782,7 @@ int scanindexreg()
 /* set3 : sets mode to at least ADRMODE_POST                                 */
 /*****************************************************************************/
 
-void set3()
+static void set3()
 {
     if (mode < ADRMODE_POST)
       mode = ADRMODE_POST;
@@ -1786,7 +1792,7 @@ void set3()
 /* scanspecial : scans for increments                                        */
 /*****************************************************************************/
 
-void scanspecial()
+static void scanspecial()
 {
     set3();
     if (!(dwOptions & OPTION_TSC))
@@ -1860,7 +1866,7 @@ void scanspecial()
 /* scanindexed :                                                             */
 /*****************************************************************************/
 
-void scanindexed()
+static void scanindexed()
 {
     set3();
     postbyte = 0;
@@ -1934,7 +1940,7 @@ void scanindexed()
 /* scanoperands :                                                            */
 /*****************************************************************************/
 
-void dodefault(struct relocrecord *pp) {
+static void dodefault(struct relocrecord *pp) {
     operand = scanexpr(0, pp);
     if (!(dwOptions & OPTION_TSC))
       skipspace();
@@ -1979,13 +1985,13 @@ void dodefault(struct relocrecord *pp) {
     }
 }
 
-void accoffset(char c, unsigned char accpost, unsigned char h63, struct relocrecord *pp) {
+static void accoffset(char c, unsigned char accpost, unsigned char h63, struct relocrecord *pp) {
     char *oldsrcptr = srcptr;
     srcptr++;
     if (!(dwOptions & OPTION_TSC))
       skipspace();
     if (*srcptr != ',')
-      { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
+      { srcptr = oldsrcptr; dodefault(pp); }
     else
     {
       if ((h63) && (!(dwOptions & OPTION_H09)))
@@ -1993,7 +1999,7 @@ void accoffset(char c, unsigned char accpost, unsigned char h63, struct relocrec
       postbyte = accpost;
       srcptr++;
       if (!scanindexreg())
-        { srcptr = oldsrcptr; c = *srcptr; dodefault(pp); }
+        { srcptr = oldsrcptr; dodefault(pp); }
       else
       {
         srcptr++;
@@ -2002,7 +2008,7 @@ void accoffset(char c, unsigned char accpost, unsigned char h63, struct relocrec
     }
 }
 
-void scanoperands09(struct relocrecord *pp, int endc)
+static void scanoperands09(struct relocrecord *pp, int endc)
 {
     char c; 
     unsigned char accpost, h63 = 0;
@@ -2093,7 +2099,42 @@ void scanoperands09(struct relocrecord *pp, int endc)
       error |= ERR_LABEL_UNDEF; 
 }
 
-void scanoperands00(struct relocrecord *pp, int endc)
+void dodefault00(struct relocrecord *pp) {
+    operand = scanexpr(0, pp);
+    if (!(dwOptions & OPTION_TSC))
+      skipspace();
+    if (*srcptr == ',') {
+      srcptr++;                           /* must be followed by "X"           */
+      if (!(dwOptions & OPTION_TSC))
+        skipspace();
+      scanname();
+      if (strcmp(unamebuf, "X"))          /* if it's NOT "X" alone,            */
+      {
+        error |= ERR_ILLEGAL_ADDR;
+        return;
+      }
+      if ((unsigned)operand < 256)
+        mode = ADRMODE_IDX;
+      else
+        error |= ERR_ILLEGAL_ADDR;
+    }
+    else
+    {
+      if (opsize == 0)
+      {
+        if (unknown || !certain || 
+          (unsigned short)(operand) >= 256)
+          opsize = 3;
+        else
+          opsize = 2;
+      }  
+      if (opsize == 1)
+        opsize = 2;         
+      mode = opsize - 1;
+    }
+}
+
+static void scanoperands00(struct relocrecord *pp, int endc)
 {
     char c, *s = srcptr;
 
@@ -2108,12 +2149,18 @@ void scanoperands00(struct relocrecord *pp, int endc)
     {
       case 'X' :                            /* "X"?                              */
         scanname();
-        if (!strcmp(unamebuf, "X"))         /* if it's "X" alone,                */
-          goto XWithout;                    /* assume it means "0,X"             */     // goto
+        if (!strcmp(unamebuf, "X")) {        /* if it's "X" alone,                */
+            /* assume it means "0,X"             */   
+            if ((unsigned)operand < 256)
+              mode = ADRMODE_IDX;
+            else
+              error |= ERR_ILLEGAL_ADDR;
+            break;
+        }
         srcptr = s;                         /* else restore current offset       */
-        goto dodefault;                     /* and treat as label starting with X*/     // goto
+        dodefault00(pp);
+        break;
       case ',':                             /* ","?                              */
-      Indexed :                                                                         // label
         srcptr++;                           /* must be followed by "X"           */
         if (!(dwOptions & OPTION_TSC))
           skipspace();
@@ -2123,7 +2170,6 @@ void scanoperands00(struct relocrecord *pp, int endc)
           error |= ERR_ILLEGAL_ADDR;
           break;
         }
-      XWithout :                                                                         // label
         if ((unsigned)operand < 256)
           mode = ADRMODE_IDX;
         else
@@ -2142,39 +2188,21 @@ void scanoperands00(struct relocrecord *pp, int endc)
           }
         else
           opsize = 2;
-        goto dodefault;                                                              // goto  
+        dodefault00(pp);
+        break;
       case '>':
         srcptr++;
         opsize = 3;
         /* fall thru on purpose */
       default:
-      dodefault:                                                                     // label  
-        operand = scanexpr(0, pp);
-        if (!(dwOptions & OPTION_TSC))
-          skipspace();
-        if (*srcptr == ',')
-          goto Indexed;                                                              //    goto
-        else
-        {
-          if (opsize == 0)
-          {
-            if (unknown || !certain || 
-              (unsigned short)(operand) >= 256)
-              opsize = 3;
-            else
-              opsize = 2;
-          }  
-          if (opsize == 1)
-            opsize = 2;         
-          mode = opsize - 1;
-        }
+        dodefault00(pp);
     } // end switch
 
     if (pass == 2 && unknown)
       error |= ERR_LABEL_UNDEF; 
 }
 
-void scanoperands11(struct relocrecord *pp, int endc)
+static void scanoperands11(struct relocrecord *pp, int endc)
 {
     char c, *s = srcptr, *next;
 
@@ -2192,11 +2220,12 @@ void scanoperands11(struct relocrecord *pp, int endc)
       case 'Y' :                            /* "Y"?                              */
         scanname();
         if (!unamebuf[1])                   /* if it's "X" or "Y" alone,         */
-          goto IdxWithout;                  /* assume it means "0,X" / "0,Y"     */     // goto
+          goto IdxWithout;                  /* assume it means "0,X" / "0,Y"     */     // goto IdxWithout
         srcptr = s;                         /* else restore current offset       */
-        goto dodefault;                     /* and treat as label                */     // goto
+        goto dodefault;                     /* and treat as label                */     // goto dodefault
+        break;
       case ',':                             /* ","?                              */
-      Indexed :                                                                         // label
+      Indexed :                                                                         // label Indexed
         srcptr++;                           /* must be followed by "X" or "Y"    */
         if (!(dwOptions & OPTION_TSC))
           skipspace();
@@ -2207,7 +2236,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
           error |= ERR_ILLEGAL_ADDR;
           break;
         }
-      IdxWithout :                                                                       // label
+      IdxWithout :                                                                       // label IdxWithout
         if ((unsigned)operand < 256)
         {
           if (unamebuf[0] == 'X')           /* page byte processing for X        */
@@ -2248,13 +2277,13 @@ void scanoperands11(struct relocrecord *pp, int endc)
           }
         else
           opsize = 2;
-        goto dodefault;                                                               // goto
+        goto dodefault;                                                               // goto dodefault
       case '>':
         srcptr++;
         opsize = 3;
         /* fall thru on purpose */
       default:
-      dodefault:                                                                       // label
+      dodefault:                                                                       // label dodefault
         operand = scanexpr(0, pp);
         if (!(dwOptions & OPTION_TSC))
           skipspace();
@@ -2262,7 +2291,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
         if (*srcptr == ',')
         {
           if (!endc)
-            goto Indexed;                                                              // goto
+            goto Indexed;                                                              // goto Indexed
           next = srcptr + 1;                /* if endc, parse ahead ...          */
           if (!(dwOptions & OPTION_TSC))
             parsespace(next, &next);
@@ -2271,7 +2300,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
               !strcmp(unamebuf, "Y"))       /* or "Y" alone                      */
           {
             srcptr = next;
-            goto IdxWithout;                /* process index argument            */    // goto
+            goto IdxWithout;                /* process index argument            */    // goto IdxWithout
           }
           /* otherwise end parsing here */
         }
@@ -2279,7 +2308,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
         if (*srcptr == ',')
         {
           if (!endc)
-            goto Indexed;                                                               // goto
+            goto Indexed;                                                               // goto Indexed
         }
         else
     #endif
@@ -2306,7 +2335,7 @@ void scanoperands11(struct relocrecord *pp, int endc)
 /* writerelhdr : writes a FLEX Relocatable Format header                     */
 /*****************************************************************************/
 
-void writerelhdr(char wcommon)
+static void writerelhdr(char wcommon)
 {
     int i;
 
@@ -2453,7 +2482,7 @@ void writerelhdr(char wcommon)
 /* writerelcommon : writes out all common blocks                             */
 /*****************************************************************************/
 
-void writerelcommon()
+static void writerelcommon()
 {
     int i, j;
     char name[9];
@@ -2494,14 +2523,14 @@ void writerelcommon()
 /* writerelext : writes out a FLEX Relocatable External table                */
 /*****************************************************************************/
 
-void writerelext()
+static void writerelext()
 {
     int i;
     char name[9];
-    unsigned char flags;
 
     for (i = 0; i < relcounter; i++)        /* write out the external data       */
     {
+      unsigned char flags;
       char cat = reltable[i].sym->cat;
       fputc((unsigned char)(reltable[i].addr >> 8), objfile);
       fputc((unsigned char)(reltable[i].addr & 0xFF), objfile);
@@ -2520,7 +2549,6 @@ void writerelext()
       if (flags & 0x80)                     /* write external symbol if needed   */
       {
         sprintf(name, "%-8.8s", reltable[i].sym->name);
-        // strupr(name);
         fwrite(name, 1, 8, objfile);
       }
     }
@@ -2530,7 +2558,7 @@ void writerelext()
 /* writerelglobal : writes out FLEX Relocatable Global table                 */
 /*****************************************************************************/
 
-void writerelglobal()
+static void writerelglobal()
 {
     int i;
     char name[9];
@@ -2545,7 +2573,6 @@ void writerelglobal()
           flag2 |= 0x10;
 
         sprintf(name, "%-8.8s", symtable.rec[i].name);
-        // strupr(name);
         fwrite(name, 1, 8, objfile);
 
         fputc(0, objfile);                  /* unknown data                      */
@@ -2562,13 +2589,12 @@ void writerelglobal()
 /* writerelmodname : writes out FLEX Relocatable Module Name                 */
 /*****************************************************************************/
 
-void writerelmodname()
+static void writerelmodname()
 {
     int i;
 
     if (!modulename[0])
       return;
-    // strupr(modulename);
     for (i = 0; modulename[i]; i++)
       fputc(modulename[i], objfile);
     fputc(0x04, objfile);
@@ -2578,16 +2604,16 @@ void writerelmodname()
 /* flushhex : write Motorola s-records                                       */
 /*****************************************************************************/
 
-void flushhex()
+static void flushhex()
 {
-    int i;
+//    int i;
 
     if (hexcount)
     {
       if (objfile)
       {
         fprintf(objfile, "S1%02X%04X", (hexcount + 3) & 0xff, hexaddr & 0xffff);
-        for (i = 0; i < hexcount; i++)
+        for (int i = 0; i < hexcount; i++)
           fprintf(objfile, "%02X", hexbuffer[i]);
         chksum += (hexaddr & 0xff) + ((hexaddr >> 8) & 0xff) + hexcount + 3;
         fprintf(objfile, "%02X\n", 0xff - (chksum & 0xff));
@@ -2602,19 +2628,16 @@ void flushhex()
 /* flushihex : write Intel hex record                                        */
 /*****************************************************************************/
 
-void flushihex()
+static void flushihex()
 {
-    int i;
-    unsigned char  *j;
-
     if (hexcount)
     {
       if (objfile)
       {
-        j = &hexbuffer[0];
+        unsigned char  *j = &hexbuffer[0];
         fprintf(objfile, ":%02X%04X00", hexcount, hexaddr & 0xffff);
         chksum = hexcount + ((hexaddr >> 8) & 0xff) + (hexaddr & 0xff);
-        for (i = 0; i < hexcount; i++, j++)
+        for (int i = 0; i < hexcount; i++, j++)
         {
           chksum += *j;
           fprintf(objfile, "%02X", *j);
@@ -2631,14 +2654,11 @@ void flushihex()
 /* flushflex : write FLEX binary record                                      */
 /*****************************************************************************/
 
-void flushflex()
+static void flushflex()
 {
-    int i;
-    unsigned char *j;
-
     if (hexcount)
     {
-      j = &hexbuffer[0];
+      unsigned char *j = &hexbuffer[0];
       if (objfile)
       {
         fputc(0x02, objfile);               /* start of record indicator         */
@@ -2646,7 +2666,7 @@ void flushflex()
               objfile);
         fputc(hexaddr & 0xff, objfile);     /* load address low part             */
         fputc(hexcount & 0xff, objfile);    /* # following data bytes            */
-        for (i = 0; i < hexcount; i++, j++) /* then put all data bytes           */
+        for (int i = 0; i < hexcount; i++, j++) /* then put all data bytes           */
           fputc(*j, objfile);
       }
       hexaddr += hexcount;                  /* set new address                   */
@@ -2658,7 +2678,7 @@ void flushflex()
 /* outhex : add a byte to motorola s-record output                           */
 /*****************************************************************************/
 
-void outhex (unsigned char x) 
+static void outhex (unsigned char x) 
 {
     if (hexcount == hexmaxcount)
       flushhex();
@@ -2670,7 +2690,7 @@ void outhex (unsigned char x)
 /* outihex : add a byte to intel hex output                                  */
 /*****************************************************************************/
 
-void outihex (unsigned char x) 
+static void outihex (unsigned char x) 
 {
     if (hexcount == ihexmaxcount)
       flushihex();
@@ -2682,7 +2702,7 @@ void outihex (unsigned char x)
 /* outflex : adds a byte to FLEX output                                      */
 /*****************************************************************************/
 
-void outflex(unsigned char x)
+static void outflex(unsigned char x)
 {
     if (hexcount == iflexmaxcount)          /* if buffer full                    */
       flushflex();                          /* flush it                          */
@@ -2693,7 +2713,7 @@ void outflex(unsigned char x)
 /* outbyte : writes one byte to the output in the selected format            */
 /*****************************************************************************/
 
-void outbyte(unsigned char uc, int off)
+static void outbyte(unsigned char uc, int off)
 {
     int nByte = (loccounter + off) / 8;
     unsigned char nBitMask = (unsigned char) (1 << ((loccounter + off) % 8));
@@ -2750,7 +2770,7 @@ void outbyte(unsigned char uc, int off)
 /* outbuffer : writes the output to a file in the selected format            */
 /*****************************************************************************/
 
-void outbuffer()
+static void outbuffer()
 {
     int i;
     for (i = 0; i < codeptr; i++)
@@ -2761,7 +2781,7 @@ void outbuffer()
 /* report : reports an error                                                 */
 /*****************************************************************************/
 
-void report()
+static void report()
 {
     int i;
 
@@ -2803,7 +2823,7 @@ void report()
 /* pemt_expr : recursively processes a PEMT expression enclosed in @(...)    */
 /*****************************************************************************/
 
-int pemt_expr
+static int pemt_expr
     (
     const char *szBuf1,                 /* buffer we're working on           */
     int atat,                           /* @ position in szBuf1              */
@@ -2814,12 +2834,6 @@ int pemt_expr
     char lBsl = 0;
     char szInt[LINELEN];
     int i, lvl = 1, ol = 0, odec = 0;
-    const char *fmts[] =
-    {
-      "%04lX",
-      "%ld",
-      "%04lX"
-    };
 
     for (i = atat + 2; szBuf1[i]; i++)      /* walk through the string           */
     {
@@ -2890,6 +2904,13 @@ int pemt_expr
       char *osp = srcptr;
       long l;
       struct relocrecord pp = {0};
+      const char *fmts[] =
+      {
+        "%04lX",
+        "%ld",
+        "%04lX"
+      };
+
       srcptr = szInt;
       l = scanexpr(0, &pp);
       if (pass == 2 && unknown)             /* unresolved items are not allowed  */
@@ -2905,7 +2926,7 @@ int pemt_expr
 /* pemt_putlist : lists the (rest of the) line with PEMT expressions         */
 /*****************************************************************************/
 
-void pemt_putlist(const char *szLine, int off)
+static void pemt_putlist(const char *szLine, int off)
 {
     /* Specials: 
        - '*' means "current address", unless prefixed with '\'
@@ -2941,7 +2962,7 @@ void pemt_putlist(const char *szLine, int off)
 /* outlist : lists the code bytes for an instruction                         */
 /*****************************************************************************/
 
-void outlist(struct oprecord *op, struct symrecord *lpLabel)
+static void outlist(const struct oprecord *op, struct symrecord *lpLabel)
 {
     int i;
 
@@ -3107,26 +3128,26 @@ void outlist(struct oprecord *op, struct symrecord *lpLabel)
     {
     #if 1
       /* work on the already expanded text */
-      const char *srcptr = srcline;
+      const char *srcptrOL = srcline;
     #else
       /* work on the original text */
-      const char *srcptr = curline->txt;
+      const char *srcptrOL = curline->txt;
     #endif
-      char c, iscchr, incomment = 0, nonblnk = 0, add_after = 0;
+      char c, incomment = 0, nonblnk = 0, add_after = 0; // iscchr, 
       int fnd = -1, bef = 0;
-      for (i = 0; srcptr[i]; i++)
+      for (i = 0; srcptrOL[i]; i++)
       {
-        c = srcptr[i];
-        iscchr = ((c == '*') ||
+        c = srcptrOL[i];
+        char iscchr = ((c == '*') ||
                   ((dwOptions & OPTION_GAS) && (c == '|')) ||
                   (c == ';'));
         if (!incomment &&
             iscchr &&
-            (c == srcptr[i + 1] || 
-             (srcptr[i + 1] == '@' && !nonblnk)))
+            (c == srcptrOL[i + 1] || 
+             (srcptrOL[i + 1] == '@' && !nonblnk)))
         {
-          c = srcptr[++i];
-          if (srcptr[i + 1] == '+')
+          c = srcptrOL[++i];
+          if (srcptrOL[i + 1] == '+')
             {
             ++i;
             add_after = 1;
@@ -3210,7 +3231,7 @@ void outlist(struct oprecord *op, struct symrecord *lpLabel)
 /* setlabel : sets a label                                                   */
 /*****************************************************************************/
 
-void setlabel(struct symrecord * lp)
+static void setlabel(struct symrecord * lp)
 {
     if (lp)
     {
@@ -3250,7 +3271,7 @@ void setlabel(struct symrecord * lp)
 /* putbyte : adds a byte to the instruction code buffer                      */
 /*****************************************************************************/
 
-void putbyte(unsigned char b)
+static void putbyte(unsigned char b)
 {
     if (codeptr < sizeof(codebuf))
       codebuf[codeptr] = b;
@@ -3261,7 +3282,7 @@ void putbyte(unsigned char b)
 /* putword : adds a word to the instruction code buffer                      */
 /*****************************************************************************/
 
-void putword(unsigned short w)
+static void putword(unsigned short w)
 {
     putbyte((unsigned char)(w >> 8));
     putbyte((unsigned char)(w & 0xff));
@@ -3271,7 +3292,7 @@ void putword(unsigned short w)
 /* putdword : adds a doubleword to the instruction code buffer               */
 /*****************************************************************************/
 
-void putdword(unsigned long d)
+static void putdword(unsigned long d)
 {
     putbyte((unsigned char)((d >> 24) & 0xff));
     putbyte((unsigned char)((d >> 16) & 0xff));
@@ -3283,7 +3304,7 @@ void putdword(unsigned long d)
 /* doaddress : assemble the right addressing bytes for an instruction        */
 /*****************************************************************************/
 
-void doaddress(struct relocrecord *p)
+static void doaddress(struct relocrecord *p)
 {
     int offs;
     int addrelocation = 0;
@@ -3395,7 +3416,7 @@ void doaddress(struct relocrecord *p)
 /* onebyte : saves integer as one instruction byte                           */
 /*****************************************************************************/
 
-void onebyte(int co)
+static void onebyte(int co)
 {
     putbyte((unsigned char)co);
 }
@@ -3404,7 +3425,7 @@ void onebyte(int co)
 /* twobyte : saves integer as two instruction bytes                          */
 /*****************************************************************************/
 
-void twobyte(int co)
+static void twobyte(int co)
 {
     putword((unsigned short)co);
 }
@@ -3413,7 +3434,7 @@ void twobyte(int co)
 /* threebyte : saves long integer as three instruction bytes                 */
 /*****************************************************************************/
 
-void threebyte(unsigned long co)
+static void threebyte(unsigned long co)
 {
     putbyte((unsigned char)((co >> 16) & 0xff));
     putbyte((unsigned char)((co >> 8) & 0xff));
@@ -3424,7 +3445,7 @@ void threebyte(unsigned long co)
 /* fourbyte : saves long integer as four instruction bytes                   */
 /*****************************************************************************/
 
-void fourbyte(unsigned long co)
+static void fourbyte(unsigned long co)
 {
     putbyte((unsigned char)((co >> 24) & 0xff));
     putbyte((unsigned char)((co >> 16) & 0xff));
@@ -3436,7 +3457,7 @@ void fourbyte(unsigned long co)
 /* oneimm : saves one immediate value                                        */
 /*****************************************************************************/
 
-void oneimm(int co)
+static void oneimm(int co)
 {
     struct relocrecord p = {0};
 
@@ -3445,8 +3466,6 @@ void oneimm(int co)
       error |= ERR_ILLEGAL_ADDR;
     putbyte((unsigned char)co);
 
-    /* addreloc(0, 2, p); */                /* no relocation for immediate op's  */
-
     putbyte((unsigned char)operand);
 }
 
@@ -3454,7 +3473,7 @@ void oneimm(int co)
 /* lea :                                                                     */
 /*****************************************************************************/
 
-void lea(int co)
+static void lea(int co)
 {
     struct relocrecord p = {0};
 
@@ -3475,7 +3494,7 @@ void lea(int co)
 /* sbranch : processes a short branch                                        */
 /*****************************************************************************/
 
-void sbranch(int co)
+static void sbranch(int co)
 {
     struct relocrecord p = {0};
     int offs;
@@ -3496,7 +3515,7 @@ void sbranch(int co)
 /* lbra : does a long branch                                                 */
 /*****************************************************************************/
 
-void lbra(int co)
+static void lbra(int co)
 {
     struct relocrecord p = {0};
     int nDiff;
@@ -3526,7 +3545,7 @@ void lbra(int co)
 /* lbranch : does a long branch                                              */
 /*****************************************************************************/
 
-void lbranch(int co)
+static void lbranch(int co)
 {
     struct relocrecord p = {0};
     int nDiff;
@@ -3555,7 +3574,7 @@ void lbranch(int co)
 /* arith : process arithmetic operation                                      */
 /*****************************************************************************/
 
-void arith(int co, char noimm)
+static void arith(int co, char noimm)
 {
     struct relocrecord p = {0};
 
@@ -3584,7 +3603,7 @@ void arith(int co, char noimm)
 /* accarith : process arithmetic operation with explicit accumulator         */
 /*****************************************************************************/
 
-void accarith(int co, char noimm, char ignore)
+static void accarith(int co, char noimm, char ignore)
 {
     char *s = srcptr;                       /* remember current offset           */
     char expacc = 1;                        /* flag whether explicit acc.        */
@@ -3642,7 +3661,7 @@ void accarith(int co, char noimm, char ignore)
 /* idxextarith : indexed / extended arithmetic, 6800 style                   */
 /*****************************************************************************/
 
-void idxextarith(int co)
+static void idxextarith(int co)
 {
     struct relocrecord p = {0};
 
@@ -3671,7 +3690,7 @@ void idxextarith(int co)
 /* darith : process direct arithmetic                                        */
 /*****************************************************************************/
 
-void darith(int co, char noimm)
+static void darith(int co, char noimm)
 {
     struct relocrecord p = {0};
 
@@ -3705,7 +3724,7 @@ void darith(int co, char noimm)
    doaddress(&p);
 }
 
-void darith18(int co, char noimm)
+static void darith18(int co, char noimm)
 {
     codebuf[codeptr++] = 0x18;
     darith(co, noimm);
@@ -3713,7 +3732,7 @@ void darith18(int co, char noimm)
       codebuf[0] = 0x18;
 }
 
-void darith1a(int co, char noimm)
+static void darith1a(int co, char noimm)
 {
     codebuf[codeptr++] = 0x1a;
     darith(co, noimm);
@@ -3723,7 +3742,7 @@ void darith1a(int co, char noimm)
 /* d2arith : process direct word arithmetic                                  */
 /*****************************************************************************/
 
-void d2arith(int co, char noimm)
+static void d2arith(int co, char noimm)
 {
     struct relocrecord p = {0};
 
@@ -3752,7 +3771,7 @@ void d2arith(int co, char noimm)
 /* qarith : process direct doubleword arithmetic                             */
 /*****************************************************************************/
 
-void qarith(int co, char noimm)
+static void qarith(int co, char noimm)
 {
     struct relocrecord p = {0};
 
@@ -3782,7 +3801,7 @@ void qarith(int co, char noimm)
 /* oneaddr :                                                                 */
 /*****************************************************************************/
 
-void oneaddr(int co)
+static void oneaddr(int co)
 {
     struct relocrecord p = {0};
     char *s;
@@ -3840,7 +3859,7 @@ void oneaddr(int co)
 /* accaddr :                                                                 */
 /*****************************************************************************/
 
-void accaddr(int co)
+static void accaddr(int co)
 {
     struct relocrecord p = {0};
     char *s;
@@ -3887,9 +3906,9 @@ void accaddr(int co)
 /* tfrexg :                                                                  */
 /*****************************************************************************/
 
-void tfrexg(int co)
+static void tfrexg(int co)
 {
-    struct regrecord * p;
+    const struct regrecord * p;
 
     putbyte((unsigned char)co);
     skipspace();
@@ -3921,9 +3940,9 @@ void tfrexg(int co)
 /* pshpul : operates on PSH / PUL mnemonics                                  */
 /*****************************************************************************/
 
-void pshpul(int co, int mode)
+static void pshpul(int co, int mode)
 {
-    struct regrecord *p;
+    const struct regrecord *p;
     struct relocrecord sp = {0};
     postbyte = 0;
 
@@ -3978,7 +3997,7 @@ void pshpul(int co, int mode)
 /* bitdirect :                                                               */
 /*****************************************************************************/
 
-void bitdirect(int co)
+static void bitdirect(int co)
 {
     struct relocrecord p = {0};
     unsigned short dir;
@@ -4030,9 +4049,9 @@ void bitdirect(int co)
 /* bittrans :                                                                */
 /*****************************************************************************/
 
-void bittrans(int co)
+static void bittrans(int co)
 {
-    struct regrecord *p;
+    const struct regrecord *p;
     struct relocrecord rp = {0};
     long t;
 
@@ -4090,12 +4109,12 @@ void bittrans(int co)
 /* blocktrans :                                                              */
 /*****************************************************************************/
 
-void blocktrans(int co)
+static void blocktrans(int co)
 {
     char reg1,reg2;
-    char mode[3] = "";
+    char modeBT[3] = "";
     static char regnames[] = "DXYUS";
-    static char *modes[] =
+    static char *modesBT[] =
     {
       "++",
       "--",
@@ -4113,12 +4132,12 @@ void blocktrans(int co)
       error |= ERR_ILLEGAL_ADDR;
     else
       reg1 = i;
-    mode[0] = *++srcptr;
-    if ((mode[0] != '+') && (mode[0] != '-'))
+    modeBT[0] = *++srcptr;
+    if ((modeBT[0] != '+') && (modeBT[0] != '-'))
     {
       if (!(dwOptions & OPTION_TSC))
         skipspace();
-      mode[0] = *srcptr;
+      modeBT[0] = *srcptr;
     }
     else
       srcptr++;
@@ -4135,22 +4154,22 @@ void blocktrans(int co)
       error |= ERR_ILLEGAL_ADDR;
     else
       reg2 = i;
-    mode[1] = *++srcptr;
-    if ((mode[1] != '+') && (mode[1] != '-'))
+    modeBT[1] = *++srcptr;
+    if ((modeBT[1] != '+') && (modeBT[1] != '-'))
     {
       if (!(dwOptions & OPTION_TSC))
         skipspace();
-      mode[1] = *srcptr;
+      modeBT[1] = *srcptr;
     }
     else
       srcptr++;
-    if ((mode[1] == ';') || (mode[1] == '*') ||
-        (mode[1] == ' ') || (mode[1] == '\t'))
-      mode[1] = '\0';
-    for (i = 0; i < (sizeof(modes) / sizeof(modes[0])); i++)
-      if (!strcmp(mode, modes[i]))
+    if ((modeBT[1] == ';') || (modeBT[1] == '*') ||
+        (modeBT[1] == ' ') || (modeBT[1] == '\t'))
+      modeBT[1] = '\0';
+    for (i = 0; i < (sizeof(modesBT) / sizeof(modesBT[0])); i++)
+      if (!strcmp(modeBT, modesBT[i]))
         break;
-    if (i >= (sizeof(modes) / sizeof(modes[0])))
+    if (i >= (sizeof(modesBT) / sizeof(modesBT[0])))
       error |= ERR_ILLEGAL_ADDR;
     else
       co |= i;
@@ -4163,7 +4182,7 @@ void blocktrans(int co)
 /* setmask :                                                                 */
 /*****************************************************************************/
 
-void setmask(int co)
+static void setmask(int co)
 {
     struct relocrecord p = {0};
     long mask = -1;
@@ -4206,7 +4225,7 @@ void setmask(int co)
 /* brmask :                                                                  */
 /*****************************************************************************/
 
-void brmask(int co)
+static void brmask(int co)
 {
     struct relocrecord p = {0}, pj = {0};
     long mask = -1;
@@ -4235,12 +4254,6 @@ void brmask(int co)
     if (!(dwOptions & OPTION_TSC))
       skipspace();
     {
-        char s_mode = mode;
-        char s_opsize = opsize;
-        long s_operand = operand;
-        char s_unknown = unknown;
-        char s_certain = certain;
-        unsigned char s_postbyte = postbyte;
         scanoperands(&pj, 0);
         if (mode != ADRMODE_DIR && mode != ADRMODE_EXT)
           error |= ERR_ILLEGAL_ADDR;
@@ -4250,12 +4263,6 @@ void brmask(int co)
           error |= ERR_RANGE;
         if (pass == 2 && unknown)
           error |= ERR_LABEL_UNDEF;
-        mode = s_mode;
-        opsize = s_opsize;
-        operand = s_operand;
-        postbyte = s_postbyte;
-        unknown = s_unknown;
-        certain = s_certain;
     }
 
     switch (mode)
@@ -4282,7 +4289,7 @@ void brmask(int co)
 /* expandline : un-tabify current line                                       */
 /*****************************************************************************/
 
-void expandline() 
+static void expandline() 
 {
     int i, j = 0, k, j1;
 
@@ -4313,7 +4320,7 @@ void expandline()
 /* expandtext : expands all texts in a line                                  */
 /*****************************************************************************/
 
-void expandtext()
+static void expandtext()
 {
     char *p;
     int i, j = 0;
@@ -4327,7 +4334,7 @@ void expandtext()
       }
       else if (*p == '&' && (p[1] < '0' || p[1] > '9'))
       {
-        struct symrecord *lp;
+        const struct symrecord *lp;
         char iname[sizeof(namebuf)];
         srcptr = p + 1;
         scanname();
@@ -4336,7 +4343,7 @@ void expandtext()
         if (lp && *namebuf &&               /* if symbol IS a text constant,     */
             (lp->cat == SYMCAT_TEXT))
         {                                 /* insert its content                */
-          char *from = texts[lp->value];
+          const char *from = texts[lp->value];
           for (i = 0; j < LINELEN && from[i]; i++)
             srcline[j++] = from[i];
           p = srcptr;
@@ -4354,7 +4361,7 @@ void expandtext()
 /* readfile : reads in a file and recurses through includes                  */
 /*****************************************************************************/
 
-struct linebuf *readfile(char *name, unsigned char lvl, struct linebuf *after)
+static struct linebuf *readfile(const char *name, unsigned char lvl, struct linebuf *after)
 {
     FILE *srcfile;
     struct linebuf *pNew;
@@ -4412,9 +4419,9 @@ struct linebuf *readfile(char *name, unsigned char lvl, struct linebuf *after)
 /* readbinary: reads in a binary file and converts to fcw / fcb lines        */
 /*****************************************************************************/
 
-struct linebuf *readbinary
+static struct linebuf *readbinary
     (
-    char *name,
+    const char *name,
     unsigned char lvl,
     struct linebuf *after,
     struct symrecord *lp
@@ -4510,7 +4517,7 @@ struct linebuf *readbinary
 /* setoptiontexts : sets up the option text variables                        */
 /*****************************************************************************/
 
-void setoptiontexts()
+static void setoptiontexts()
 {
     int i;
                                             /* walk option list                  */
@@ -4528,12 +4535,12 @@ void setoptiontexts()
 /* setoption : processes an option string                                    */
 /*****************************************************************************/
 
-int setoption ( char *szOpt )
+static int setoption (const char *szOpt )
 {
     char iopt[4];
     int i;
 
-    for (i = 0; szOpt[i] && i < sizeof(iopt); i++)
+    for (i = 0; i < sizeof(iopt) && szOpt[i]; i++)
       iopt[i] = toupper(szOpt[i]);
     if (i >= sizeof(iopt))
       i--;
@@ -4610,7 +4617,7 @@ int setoption ( char *szOpt )
 /* pseudoop : processes all known pseudo-ops                                 */
 /*****************************************************************************/
 
-void pseudoop(int co, struct symrecord * lp)
+static void pseudoop(int co, struct symrecord * lp)
 {
     int i, j;
     char c, fillc;
@@ -5382,7 +5389,6 @@ void pseudoop(int co, struct symrecord * lp)
         if (!lp)                            /* label is mandatory!               */
           error |= ERR_LABEL_MISSING;
         {
-        struct regrecord *p;
         postbyte = 0;
         do
         {
@@ -5391,10 +5397,11 @@ void pseudoop(int co, struct symrecord * lp)
           if (!(dwOptions & OPTION_TSC))
             skipspace();
           scanname(); 
-          if ((p = findreg(unamebuf)) == 0)
+          const struct regrecord *por;
+          if ((por = findreg(unamebuf)) == 0)
             error |= ERR_ILLEGAL_ADDR;
           else
-            postbyte |= p->psh; 
+            postbyte |= por->psh; 
           if (!(dwOptions & OPTION_TSC))
             skipspace();
         } while (*srcptr == ',');
@@ -5536,7 +5543,7 @@ void pseudoop(int co, struct symrecord * lp)
 /* macskip : skips a range of macro lines                                    */
 /*****************************************************************************/
 
-struct linebuf *macskip(struct linebuf *pmac, int nSkips)
+static struct linebuf *macskip(struct linebuf *pmac, int nSkips)
 {
     if (nSkips < 0)                         /* we need to go to the line BEFORE  */
       nSkips--;                             /* the one we need!                  */
@@ -5564,9 +5571,9 @@ struct linebuf *macskip(struct linebuf *pmac, int nSkips)
 /* expandmacro : expands a macro definition below the current line           */
 /*****************************************************************************/
 
-void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
+static void expandmacro(struct symrecord *lp, const struct symrecord *lpmac)
 {
-    struct oprecord *op;
+    const struct oprecord *op;
     char szMacInv[LINELEN];                 /* macro invocation line             */
     char szLine[LINELEN];                   /* current macro line                */
     char *szMacParm[10];
@@ -5581,8 +5588,7 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
     struct linebuf *pdup = NULL;            /* DUP start line                    */
     int nDup = 0;                           /* # repetitions for DUP             */
     int terminate = 0;                      /* terminate macro expansion if set  */
-    int skipit = 0;                         /* skip this line                    */
-    int suppress[64] = {0};                 /* internal suppression (max.64 lvl) */
+    int suppressEM[64] = {0};                 /* internal suppression (max.64 lvl) */
     int ifcount = 0;                        /* internal if counter               */
     int curlvl = curline->lvl & LINCAT_LVLMASK;
     struct relocrecord p = {0};
@@ -5674,7 +5680,7 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
       srcptr = s = pmac->txt;
       d = szLine;
       op = NULL;
-      skipit = 0;
+      int skipit = 0;                       /* skip this line                    */
 
       while (*s)                            /* first, expand the line            */
       {
@@ -5687,7 +5693,7 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
         {
           if (s[1] >= '0' && s[1] <= '9')
           {
-            char *from = szMacParm[s[1] - '0'];
+            const char *from = szMacParm[s[1] - '0'];
             int i = 0, j = (int)(d - szLine);
             for (; j < LINELEN && from[i]; i++, j++)
               *d++ = from[i];
@@ -5695,17 +5701,17 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
           }
           else
           {
-            struct symrecord *lp;
+            const struct symrecord *lpEM;
             char iname[sizeof(namebuf)];
             char *nc;
             parsename(s + 1, &nc);
             sprintf(iname, "&%.*s", (int)(sizeof(iname) - 2), namebuf);
-            lp = findsym(iname, 0);
-            if (lp && *namebuf &&           /* if symbol IS a text constant,     */
-                (lp->cat == SYMCAT_TEXT))
+            lpEM = findsym(iname, 0);
+            if (lpEM && *namebuf &&           /* if symbol IS a text constant,     */
+                (lpEM->cat == SYMCAT_TEXT))
             {                             /* insert its content                */
               int i = 0, j = (int)(d - szLine);
-              char *from = texts[lp->value];
+              const char *from = texts[lpEM->value];
               for (; j < LINELEN && from[i]; i++, j++)
                 *d++ = from[i];
               s = nc;
@@ -5743,7 +5749,7 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
             terminate = 1;                  /* terminate macro expansion         */
             break;
           case PSEUDO_EXITM :               /* EXITM ?                           */
-            if (!suppress[ifcount])         /* if not suppressed                 */
+            if (!suppressEM[ifcount])         /* if not suppressed                 */
               terminate = 1;                /* terminate macro expansion         */
             break;
           case PSEUDO_DUP :                 /* DUP ?                             */
@@ -5779,9 +5785,9 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
           case PSEUDO_IFN :                 /* IFN                               */
             ifcount++;                      /* increment # ifs                   */
                                             /* take suppression from higher level*/
-            suppress[ifcount] = suppress[ifcount - 1];
-            if (suppress[ifcount])          /* if already suppressed             */
-              suppress[ifcount]++;          /* inrease # suppressions            */
+            suppressEM[ifcount] = suppressEM[ifcount - 1];
+            if (suppressEM[ifcount])          /* if already suppressed             */
+              suppressEM[ifcount]++;          /* inrease # suppressions            */
             else                            /* otherwise evaluate expression     */
               {
               operand = scanexpr(0, &p);
@@ -5790,7 +5796,7 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
               if (op->code == PSEUDO_IFN)   /* if IFN                            */
                 operand = !operand;         /* invert operand                    */
               if (!operand)                 /* if evaulation to zer0             */
-                suppress[ifcount]++;        /* suppress until ELSE or ENDIF      */
+                suppressEM[ifcount]++;        /* suppress until ELSE or ENDIF      */
               if (!(dwOptions & OPTION_TSC))
                 skipspace();
               if (*srcptr == ',')           /* if skip count passed              */
@@ -5816,9 +5822,9 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
           case PSEUDO_IFNC :                /* IFNC                              */
             ifcount++;                      /* increment # ifs                   */
                                             /* take suppression from higher level*/
-            suppress[ifcount] = suppress[ifcount - 1];
-            if (suppress[ifcount])          /* if already suppressed             */
-              suppress[ifcount]++;          /* inrease # suppressions            */
+            suppressEM[ifcount] = suppressEM[ifcount - 1];
+            if (suppressEM[ifcount])          /* if already suppressed             */
+              suppressEM[ifcount]++;          /* inrease # suppressions            */
             else                            /* otherwise evaluate expression     */
             {
               if (!(dwOptions & OPTION_TSC))
@@ -5842,7 +5848,7 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
               if (op->code == PSEUDO_IFNC)
                 operand = !operand;
               if (!operand)                 /* if evaulation to zer0             */
-                suppress[ifcount]++;        /* suppress until ELSE or ENDIF      */
+                suppressEM[ifcount]++;        /* suppress until ELSE or ENDIF      */
               if (!(dwOptions & OPTION_TSC))
                 skipspace();
               if (*srcptr == ',')           /* if skip count passed              */
@@ -5866,23 +5872,23 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
               skipit = 1;                   /* don't add this line!              */
             break;
           case PSEUDO_ELSE :                /* ELSE                              */
-            if (!suppress[ifcount])         /* if IF not suppressed              */
-              suppress[ifcount]++;          /* suppress ELSE clause              */
+            if (!suppressEM[ifcount])         /* if IF not suppressed              */
+              suppressEM[ifcount]++;          /* suppress ELSE clause              */
             else                            /* otherwise                         */
-              suppress[ifcount]--;          /* decrement suppression             */
+              suppressEM[ifcount]--;          /* decrement suppression             */
             skipit = 1;                     /* don't add this line!              */
             break;
           case PSEUDO_ENDIF :               /* ENDIF                             */
             if (ifcount)
               ifcount--;
-            if (suppress[ifcount])
-              suppress[ifcount]--;
+            if (suppressEM[ifcount])
+              suppressEM[ifcount]--;
             skipit = 1;                     /* don't add this line!              */
             break;
         }
       }
 
-      if (!skipit && !suppress[ifcount])    /* if not skipping this one          */
+      if (!skipit && !suppressEM[ifcount])    /* if not skipping this one          */
       {                                   /* add line to source                */
         pcur = allocline(pcur, curline->fn, curline->ln,
                          (unsigned char)(LINCAT_MACEXP | curlvl),
@@ -5917,10 +5923,10 @@ void expandmacro(struct symrecord *lp, struct symrecord *lpmac)
 /* processline : processes a source line                                     */
 /*****************************************************************************/
 
-void processline()
+static void processline()
 {
     struct symrecord *lp, *lpLabel = NULL, *lpmac = NULL;
-    struct oprecord *op = NULL;
+    const struct oprecord *op = NULL;
     int co;
     unsigned short cat;
     char c;
@@ -6193,10 +6199,9 @@ void processline()
 /* suppressline : suppresses a line                                          */
 /*****************************************************************************/
 
-void suppressline()
+static void suppressline()
 {
-    struct oprecord * op = NULL;
-
+    const struct oprecord * op = NULL;
     srcptr = srcline;
     oldlc = loccounter;
     codeptr = 0;
@@ -6226,20 +6231,17 @@ void suppressline()
             (op->code == PSEUDO_IFD) ||
             (op->code == PSEUDO_IFND))
         {
-          ifcount++;
           condline = 1;                     /* this is a conditional line        */
         }
         else if (op->code == PSEUDO_ENDIF)  /* ENDIF                             */
         {
-          if (ifcount > 0)
-            ifcount--;
-          else if (suppress == 1 || suppress == 2)
+          if (suppress == 1 || suppress == 2)
             suppress = 0;
           condline = 1;                     /* this is a conditional line        */
         }
         else if (op->code == PSEUDO_ELSE)   /* ELSE                              */
         {
-          if (ifcount == 0 && suppress == 2)
+          if (suppress == 2)
             suppress = 0;
           condline = 1;                     /* this is a conditional line        */
         }
@@ -6256,7 +6258,7 @@ void suppressline()
 /* usage : prints out correct usage                                          */
 /*****************************************************************************/
 
-void usage(char *nm)
+static void usage(const char *nm)
 {
     printf("Usage: %s [-option*] srcname*\n",
            nm ? nm : "a09");
@@ -6283,7 +6285,7 @@ void usage(char *nm)
 /* getoptions : retrieves the options from the passed argument array         */
 /*****************************************************************************/
 
-void getoptions (int argc, char* argv[])
+static void getoptions (int argc, char* argv[])
 {
     int i, j;
     char *ld;
@@ -6431,9 +6433,9 @@ void getoptions (int argc, char* argv[])
 /* processfile : processes the input file                                    */
 /*****************************************************************************/
 
-void processfile(struct linebuf *pline)
+static void processfile(struct linebuf *pline)
 {
-    struct linebuf *plast = pline;
+    const struct linebuf *plast = pline;
 
     while (pline)
     {

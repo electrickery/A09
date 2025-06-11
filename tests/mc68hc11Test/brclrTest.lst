@@ -1,0 +1,34 @@
+1 error(s), 0 warning(s) unlisted in pass 1
+                      ; source: https://slideplayer.com/slide/13077285/
+
+ 0013                 N       equ $13 
+                              org $20 
+ 0020                 sum     rmb 2 
+                              org $C000 
+ C000 8600                    ldaa #$00 
+ C002 9720                    staa sum ; initialize sum to 0 
+ C004 9721                    staa sum+1 ; “ 
+ C006 8E0000                  ldx #$00 ; point X to array[0] 
+                      loop 
+                              brclr 0,X $01 chkend ; is it an odd number? 
+*** Error 16: Illegal mnemonic
+ C009 DC20                    ldd sum ; add the odd number to the sum 
+ C00B EB00                    addb 0,X ; “ 
+ C00D 8900                    adca #0 ; “ 
+ C00F DD20                    std sum ; “ 
+                      chkend 
+ C011 8C0013                  cpx #N ; compare the pointer to the address of 
+the last element 
+ C014 2402                    bhs exit ; is this the end? 
+ C016 3001                    inx bra loop ; not yet done, continue 
+                      exit 
+                              end
+
+1 error(s) in pass 2.
+
+SYMBOL TABLE
+    CHKEND 02 C011      EXIT 02 C018      LOOP 02 C009         N 00 0013
+       SUM 02 0020
+5 SYMBOLS
+
+2 error(s), 0 warning(s)

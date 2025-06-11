@@ -1823,8 +1823,8 @@ int suppress;                           /* 0=no suppress                     */
                                         /* 2=until ELSE                      */
                                         /* 3=until ENDM                      */
 char condline = 0;                      /* flag whether on conditional line  */
-int ifcount;                            /* count of nested IFs within        */
-                                        /* suppressed text                   */
+//int ifcount;                            /* count of nested IFs within        */
+//                                        /* suppressed text                   */
 int printovr = 0;                       /* print override flags:             */
 #define PRINTOV_PADDR   1               /* print address in listing          */
 #define PRINTOV_PLABEL  2               /* print label address in listing    */
@@ -1882,8 +1882,8 @@ unsigned char bUsedBytes[8192] = {0};   /* 1 bit per byte of the address spc */
 /* Necessary forward declarations                                            */
 /*****************************************************************************/
 
-struct linebuf *readfile(char *name, unsigned char lvl, struct linebuf *after);
-struct linebuf *readbinary(char *name, unsigned char lvl, struct linebuf *after, struct symrecord *lp);
+static struct linebuf *readfile(const char *name, unsigned char lvl, struct linebuf *after);
+static struct linebuf *readbinary(const char *name, unsigned char lvl, struct linebuf *after, struct symrecord *lp);
 
 /*****************************************************************************/
 /* allocline : allocates a line of text                                      */
@@ -1895,7 +1895,7 @@ struct linebuf * allocline
     char *fn,
     int line,
     unsigned char lvl,
-    char *text
+    const char *text
     )
 {
     struct linebuf *pNew = (struct linebuf *)
