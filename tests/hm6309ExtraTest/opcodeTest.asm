@@ -26,8 +26,7 @@
         ADDW    >$0123          ; Extended
     
         AIM    #$3F,4,U         ; Direct DP-page
-;        AIM    [$0123]          ; Indexed
-;        AIM    >$0123           ; Extended
+;        AIM    #$7F,[$0123]     ; Indexed
         AIM    #$7F,<$0123      ; Extended
         
         ANDR    D,X             ; Immed.
@@ -82,8 +81,8 @@
         DIVQ    >$0123          ; Extended
 
         EIM     #$3F,4,U        ; Direct DP-page
-;        EIM     #$3F,4,[$01]     ; Indexed
-;        EIM     #$3F,4,>$0123    ; Extended
+;        EIM     #$3F,[$0123]    ; Indexed
+        EIM     #$7F,<$0123     ; Extended
 
         EORD    #$0123          ; Immed.
         EORD    $01             ; Direct DP-page
@@ -184,8 +183,8 @@
         NEGD                    ; Inherent
         
         OIM     #$C0,4,U         ; Direct DP-page
-;        OIM     [$0123],4,U         ; Indexed
-;        OIM     >$0123,4,U          ; Extended
+;        OIM     [$0123],U         ; Indexed
+        OIM     #$7F,<$0123          ; Extended
         
         ORD     #$0123          ; Immed.
         ORD     $01             ; Direct DP-page
@@ -271,7 +270,7 @@
 
         TFM     X+,Y+           ; Immed.
         TFM     U-,S-           ; Immed.
-;        TFM     D+,X             Immed.   ???
+        TFM     D+,X            ; Immed.
         TFM     Y,U+            ; Immed.
 
         TFR     D,X                ; Immed.
@@ -282,8 +281,9 @@
         TFR     X,D                ; Immed.
 
         TIM     #$3F,4,U
-        TIM     #$23,6,U
-        TIM	#$46,2
+        TIM     #$46,2
+;        TIM     [$0123],U         ; Indexed
+        TIM     #$7F,<$0123          ; Extended
 
         TSTD                    ; Inherent
         TSTE                    ; Inherent
