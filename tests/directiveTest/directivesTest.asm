@@ -30,9 +30,15 @@ LABEL:  EQU     $00
         
 SETL:   SET     $0123
 
+	FCW	SETL
+
         LIB    include.txt
+        
+SETL:	SET    $4567     
          
-RLIST2  REG     A,B,Y,U,DP
+	FCW	SETL
+	
+	RLIST2  REG     A,B,Y,U,DP
 
         OPT     PAG
 ;        PAG enable page formatting and numbering 
