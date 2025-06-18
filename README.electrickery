@@ -15,3 +15,10 @@ Fixed the switch with goto's for the 6809 situation, proving it is possible with
 some functions. The 6800 and 68C11 situation should be fixed too.
 
 fjkraan@electrickery.nl, 2025-06-09
+
+The tests are very rudimentary for now started only manually with 'sh alltests.sh' 
+from the ./A09/tests/ directory. Making a test target in the Makefile is an exercise 
+for later.
+
+BTW, I have no idea what the .vxproj, .sln, .ds?, .vcproj files do. I compile by 
+running make. 
