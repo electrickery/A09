@@ -1860,7 +1860,7 @@ int nCurLine = 0;                       /* current output line on page       */
 int nCurCol = 0;                        /* current output column on line     */
 int nCurPage = 0;                       /* current page #                    */
 int nLinesPerPage = 66;                 /* # lines on a page                 */
-int nColsPerLine = 80;                  /* # columns per line                */
+int nColsPerLine = 120;                  /* # columns per line                */
 char szTitle[128] = "";                 /* title for listings                */
 char szSubtitle[128] = "";              /* subtitle for listings             */
 

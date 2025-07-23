@@ -23,22 +23,18 @@
 ;ERRMSG  ERR     Custom error message
         
 LABEL:  EQU     $00
-        
-        RPT     3
-        
-        NOP
-        
-SETL:   SET     $0123
 
-	FCW	SETL
+        RPT     3
+
+        NOP
+
+SETL:	SET    $0123
 
         LIB    include.txt
-        
-SETL:	SET    $4567     
-         
-	FCW	SETL
-	
-	RLIST2  REG     A,B,Y,U,DP
+
+SETL:	SET    $4567
+
+RLIST2  REG     A,B,Y,U,DP
 
         OPT     PAG
 ;        PAG enable page formatting and numbering 

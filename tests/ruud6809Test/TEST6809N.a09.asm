@@ -3,7 +3,8 @@
 ;
 ; Syntax modified for A09 assembler
 
-
+
+
 D00C1	EQU	$00C1
 D00C8	EQU	$00C8
 D00D3	EQU	$00D3
@@ -1154,6 +1155,8 @@ D0962:					;				[0962]
 	leax	1,x
 	leax	1,x
 	leay	1,y
+	
+
 	bne	A0B2C			;				[0B2C]
 
 	jmp	<$12

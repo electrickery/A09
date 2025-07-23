@@ -292,8 +292,7 @@
  E2B3 115D                    TSTF                    ; Inherent
  E2B5 105D                    TSTW                    ; Inherent
                               
-                              ; operands: destination register, source bit, 
-destination bit, source address.
+                              ; operands: destination register, source bit, destination bit, source address.
  E2B7 11304423                BAND    A,0,4,$23       ; Immed.   
 
  E2BB 11314423                BIAND   A,0,4,$23       ; Immed.

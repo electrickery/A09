@@ -3,6 +3,8 @@
 . ../config.sh
 
 TESTFILE=directivesTest
+MYPATH=`pwd`
+TESTDIR=`basename $MYPATH`
 
 FILES="$TESTFILE.lst $TESTFILE.s19"
 
@@ -23,7 +25,7 @@ do
     if [ $? != 0 ] 
     then
         DIFFOUND=-1
-        echo "Difference in $FILE"
+        echo "Difference in $TESTDIR $FILE"
     else
         rm -f $OUTTEMP $REFTEMP
     fi

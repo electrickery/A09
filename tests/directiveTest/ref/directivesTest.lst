@@ -2,8 +2,7 @@
 
 
 
-                      ; Source: www.flexusergroup.com/flexusergroup/pdfs/asmb.pd
-f
+                      ; Source: www.flexusergroup.com/flexusergroup/pdfs/asmb.pdf
 
                               ORG     $f000
                               
@@ -11,7 +10,7 @@ f
                               
 
 
-This is the title or TTL         2025-06-11 A09 6809 Assembler V1.62 Page 1
+This is the title or TTL         2025-07-23 A09 6809 Assembler V1.62 Page 1
 This is the sub-title
 
                               
@@ -38,18 +37,20 @@ This is the sub-title
                       ;ERRMSG  ERR     Custom error message
                               
  0000                 LABEL:  EQU     $00
-                              
-                              
+
+
  F028 12                      NOP
-                              
- 0123                 SETL:   SET     $0123
+
+ 0123                 SETL:   SET    $0123
 
                       ; Text from the include.txt file
 
  F029 12                      NOP     ; included nop
                               
                               
-                               
+
+ 4567                 SETL:   SET    $4567
+
                       RLIST2  REG     A,B,Y,U,DP
 
                               OPT     PAG
@@ -66,11 +67,11 @@ This is the sub-title
                               END     
 
 
-This is the title or TTL         2025-06-11 A09 6809 Assembler V1.62 Page 2
+This is the title or TTL         2025-07-23 A09 6809 Assembler V1.62 Page 2
 This is the sub-title
 
 SYMBOL TABLE
-     LABEL 00 0000    RLIST2 14 006E      SETL 01 0123
+     LABEL 00 0000    RLIST2 14 006E      SETL 01 4567
 3 SYMBOLS
 
 0 error(s), 0 warning(s)

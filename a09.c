@@ -330,6 +330,7 @@
 -- Electrickery Additions: --
    
    v1.63f 2025-06-10 real cleanup using ccpcheck 
+          2025-07-16 made line length wider 80 >> 120 (nColsPerLine)
    * 
 */
 
