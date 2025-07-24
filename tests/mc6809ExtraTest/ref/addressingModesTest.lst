@@ -1,0 +1,917 @@
+                      ; Sources:
+                      ; MC6809 datasheet, Figure 19 - Programming Aid
+                      ; Programming the 6809, Zaks, Appendix F - Indirect Addressing Mode Postbytes
+
+
+                              ORG     $F000
+
+                      MF000
+                      ; LDA
+ F000 8600                    LDA     #$00        ; 0000: 86 00          Immediate
+ F002 B6F000                  LDA     MF000       ; 0002: 96 00          Direct
+ F005 A600                    LDA     $00,X       ; 0004: A6 00          Indexed
+ F007 B6F000                  LDA     >MF000      ; 0006: B6 00 00       Extended
+
+ F00A A684                    LDA     ,X          ; Constant Indexed non-indirect 
+ F00C A601                    LDA     $1,X        ; Constant Indexed non-indirect, 5 bits
+ F00E A68811                  LDA     $11,X       ; Constant Indexed non-indirect, 8 bits
+ F011 A6891111                LDA     $1111,X     ; Constant Indexed non-indirect, 16 bits
+ F015 A6A4                    LDA     ,Y          ; Constant Indexed non-indirect 
+ F017 A621                    LDA     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F019 A6A811                  LDA     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F01C A6A91111                LDA     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F020 A6A4                    LDA     ,Y          ; Constant Indexed non-indirect 
+ F022 A641                    LDA     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F024 A6C811                  LDA     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F027 A6C91111                LDA     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F02B A6C4                    LDA     ,U          ; Constant Indexed non-indirect 
+ F02D A661                    LDA     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F02F A6E811                  LDA     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F032 A6E91111                LDA     $1111,S     ; Constant Indexed non-indirect, 16 bits
+
+ F036 A686                    LDA     A,X         ; Accumulator Indexed indirect
+ F038 A685                    LDA     B,X         ; Accumulator Indexed indirect
+ F03A A68B                    LDA     D,X         ; Accumulator Indexed indirect
+ F03C A6A6                    LDA     A,Y         ; Accumulator Indexed indirect
+ F03E A6A5                    LDA     B,Y         ; Accumulator Indexed indirect
+ F040 A6AB                    LDA     D,Y         ; Accumulator Indexed indirect
+ F042 A6C6                    LDA     A,U         ; Accumulator Indexed indirect
+ F044 A6C5                    LDA     B,U         ; Accumulator Indexed indirect
+ F046 A6CB                    LDA     D,U         ; Accumulator Indexed indirect
+ F048 A6E6                    LDA     A,S         ; Accumulator Indexed indirect
+ F04A A6E5                    LDA     B,S         ; Accumulator Indexed indirect
+ F04C A6EB                    LDA     D,S         ; Accumulator Indexed indirect
+
+ F04E A680                    LDA     ,X+         ; Auto increment indexed non-indirect
+ F050 A681                    LDA     ,X++        ; Auto increment indexed non-indirect
+ F052 A682                    LDA     ,-X         ; Auto decrement indexed non-indirect
+ F054 A683                    LDA     ,--X        ; Auto decrement indexed non-indirect
+ F056 A6A0                    LDA     ,Y+         ; Auto increment indexed non-indirect
+ F058 A6A1                    LDA     ,Y++        ; Auto increment indexed non-indirect
+ F05A A6A2                    LDA     ,-Y         ; Auto decrement indexed non-indirect
+ F05C A6A3                    LDA     ,--Y        ; Auto decrement indexed non-indirect
+ F05E A6C0                    LDA     ,U+         ; Auto increment indexed non-indirect
+ F060 A6C1                    LDA     ,U++        ; Auto increment indexed non-indirect
+ F062 A6C2                    LDA     ,-U         ; Auto decrement indexed non-indirect
+ F064 A6C3                    LDA     ,--U        ; Auto decrement indexed non-indirect
+ F066 A6E0                    LDA     ,S+         ; Auto increment indexed non-indirect
+ F068 A6E1                    LDA     ,S++        ; Auto increment indexed non-indirect
+ F06A A6E2                    LDA     ,-S         ; Auto decrement indexed non-indirect
+ F06C A6E3                    LDA     ,--S        ; Auto decrement indexed non-indirect
+
+ F06E A68D0F8D                LDA     -$1,PCR     ; Constant Offset from PC
+
+ F072 A694                    LDA     [,X]        ; Constant Offset from R, Indirect, no offset
+ F074 A69801                  LDA     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F077 A6991111                LDA     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F07B A6B4                    LDA     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F07D A6B801                  LDA     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F080 A6B91111                LDA     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F084 A6D4                    LDA     [,U]        ; Constant Offset from R, Indirect, no offset
+ F086 A6D801                  LDA     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F089 A6D91111                LDA     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F08D A6F4                    LDA     [,S]        ; Constant Offset from R, Indirect, no offset
+ F08F A6F801                  LDA     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F092 A6F91111                LDA     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F096 A696                    LDA     [A,X]       ; Accumulator Indexed indirect
+ F098 A695                    LDA     [B,X]       ; Accumulator Indexed indirect
+ F09A A69B                    LDA     [D,X]       ; Accumulator Indexed indirect
+ F09C A6B6                    LDA     [A,Y]       ; Accumulator Indexed indirect
+ F09E A6B5                    LDA     [B,Y]       ; Accumulator Indexed indirect
+ F0A0 A6BB                    LDA     [D,Y]       ; Accumulator Indexed indirect
+ F0A2 A6D6                    LDA     [A,U]       ; Accumulator Indexed indirect
+ F0A4 A6D5                    LDA     [B,U]       ; Accumulator Indexed indirect
+ F0A6 A6DB                    LDA     [D,U]       ; Accumulator Indexed indirect
+ F0A8 A6F6                    LDA     [A,S]       ; Accumulator Indexed indirect
+ F0AA A6F5                    LDA     [B,S]       ; Accumulator Indexed indirect
+ F0AC A6FB                    LDA     [D,S]       ; Accumulator Indexed indirect
+
+ F0AE A691                    LDA     [,X++]      ; Auto increment indexed indirect
+ F0B0 A693                    LDA     [,--X]      ; Auto decrement indexed indirect
+ F0B2 A6B1                    LDA     [,Y++]      ; Auto increment indexed indirect
+ F0B4 A6B3                    LDA     [,--Y]      ; Auto decrement indexed indirect
+ F0B6 A6D1                    LDA     [,U++]      ; Auto increment indexed indirect
+ F0B8 A6D3                    LDA     [,--U]      ; Auto decrement indexed indirect
+ F0BA A6F1                    LDA     [,S++]      ; Auto increment indexed indirect
+ F0BC A6F3                    LDA     [,--S]      ; Auto decrement indexed indirect
+                              
+ F0BE A69D0F3D                LDA     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LDB
+ F0C2 C600                    LDB     #$00        ; 0009: C6 00          Immediate
+ F0C4 F6F000                  LDB     MF000       ; 000B: D6 00          Direct
+ F0C7 E600                    LDB     $00,X       ; 000D: E6 00          Indexed
+ F0C9 F6F000                  LDB     >MF000      ; 000F: F6 00 00       Extended
+                              
+ F0CC E684                    LDB     ,X          ; Constant Indexed non-indirect 
+ F0CE E601                    LDB     $1,X        ; Constant Indexed non-indirect
+ F0D0 E68811                  LDB     $11,X       ; Constant Indexed non-indirect
+ F0D3 E6891111                LDB     $1111,X     ; Constant Indexed non-indirect
+ F0D7 E6A4                    LDB     ,Y          ; Constant Indexed non-indirect 
+ F0D9 E621                    LDB     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F0DB E6A811                  LDB     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F0DE E6A91111                LDB     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F0E2 E6A4                    LDB     ,Y          ; Constant Indexed non-indirect 
+ F0E4 E641                    LDB     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F0E6 E6C811                  LDB     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F0E9 E6C91111                LDB     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F0ED E6C4                    LDB     ,U          ; Constant Indexed non-indirect 
+ F0EF E661                    LDB     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F0F1 E6E811                  LDB     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F0F4 E6E91111                LDB     $1111,S     ; Constant Indexed non-indirect, 16 bits
+
+ F0F8 E686                    LDB     A,X         ; Accumulator Indexed indirect
+ F0FA E685                    LDB     B,X         ; Accumulator Indexed indirect
+ F0FC E68B                    LDB     D,X         ; Accumulator Indexed indirect
+ F0FE E6A6                    LDB     A,Y         ; Accumulator Indexed indirect
+ F100 E6A5                    LDB     B,Y         ; Accumulator Indexed indirect
+ F102 E6AB                    LDB     D,Y         ; Accumulator Indexed indirect
+ F104 E6C6                    LDB     A,U         ; Accumulator Indexed indirect
+ F106 E6C5                    LDB     B,U         ; Accumulator Indexed indirect
+ F108 E6CB                    LDB     D,U         ; Accumulator Indexed indirect
+ F10A E6E6                    LDB     A,S         ; Accumulator Indexed indirect
+ F10C E6E5                    LDB     B,S         ; Accumulator Indexed indirect
+ F10E E6EB                    LDB     D,S         ; Accumulator Indexed indirect
+
+ F110 E680                    LDB     ,X+         ; Auto increment indexed non-indirect
+ F112 E681                    LDB     ,X++        ; Auto increment indexed non-indirect
+ F114 E682                    LDB     ,-X         ; Auto decrement indexed non-indirect
+ F116 E683                    LDB     ,--X        ; Auto decrement indexed non-indirect
+ F118 E6A0                    LDB     ,Y+         ; Auto increment indexed non-indirect
+ F11A E6A1                    LDB     ,Y++        ; Auto increment indexed non-indirect
+ F11C E6A2                    LDB     ,-Y         ; Auto decrement indexed non-indirect
+ F11E E6A3                    LDB     ,--Y        ; Auto decrement indexed non-indirect
+ F120 E6C0                    LDB     ,U+         ; Auto increment indexed non-indirect
+ F122 E6C1                    LDB     ,U++        ; Auto increment indexed non-indirect
+ F124 E6C2                    LDB     ,-U         ; Auto decrement indexed non-indirect
+ F126 E6C3                    LDB     ,--U        ; Auto decrement indexed non-indirect
+ F128 E6E0                    LDB     ,S+         ; Auto increment indexed non-indirect
+ F12A E6E1                    LDB     ,S++        ; Auto increment indexed non-indirect
+ F12C E6E2                    LDB     ,-S         ; Auto decrement indexed non-indirect
+ F12E E6E3                    LDB     ,--S        ; Auto decrement indexed non-indirect
+
+ F130 E68D0ECB                LDB     -$1,PCR     ; Constant Offset from PC
+
+ F134 E694                    LDB     [,X]        ; Constant Offset from R, Indirect, no offset
+ F136 E69801                  LDB     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F139 E6991111                LDB     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F13D E6B4                    LDB     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F13F E6B801                  LDB     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F142 E6B91111                LDB     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F146 E6D4                    LDB     [,U]        ; Constant Offset from R, Indirect, no offset
+ F148 E6D801                  LDB     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F14B E6D91111                LDB     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F14F E6F4                    LDB     [,S]        ; Constant Offset from R, Indirect, no offset
+ F151 E6F801                  LDB     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F154 E6F91111                LDB     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F158 E696                    LDB     [A,X]       ; Accumulator Indexed indirect
+ F15A E695                    LDB     [B,X]       ; Accumulator Indexed indirect
+ F15C E69B                    LDB     [D,X]       ; Accumulator Indexed indirect
+
+ F15E E691                    LDB     [,X++]      ; Auto increment indexed indirect
+ F160 E693                    LDB     [,--X]      ; Auto decrement indexed indirect
+ F162 E6B1                    LDB     [,Y++]      ; Auto increment indexed indirect
+ F164 E6B3                    LDB     [,--Y]      ; Auto decrement indexed indirect
+ F166 E6D1                    LDB     [,U++]      ; Auto increment indexed indirect
+ F168 E6D3                    LDB     [,--U]      ; Auto decrement indexed indirect
+ F16A E6F1                    LDB     [,S++]      ; Auto increment indexed indirect
+ F16C E6F3                    LDB     [,--S]      ; Auto decrement indexed indirect
+
+ F16E E69D0E8D                LDB     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LDD
+ F172 CCF000                  LDD     #MF000      ; 0012: CC 00 00       Immediate
+ F175 FCF000                  LDD     MF000       ; 0015: DC 00          Direct
+ F178 EC00                    LDD     $00,X       ; 0017: EC 00          Indexed
+ F17A FCF000                  LDD     >MF000      ; 0019: FC 00 00       Extended
+
+ F17D EC84                    LDD     ,X          ; Constant Indexed non-indirect 
+ F17F EC01                    LDD     $1,X        ; Constant Indexed non-indirect
+ F181 EC8811                  LDD     $11,X       ; Constant Indexed non-indirect
+ F184 EC891111                LDD     $1111,X     ; Constant Indexed non-indirect
+ F188 ECA4                    LDD     ,Y          ; Constant Indexed non-indirect 
+ F18A EC21                    LDD     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F18C ECA811                  LDD     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F18F ECA91111                LDD     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F193 ECA4                    LDD     ,Y          ; Constant Indexed non-indirect 
+ F195 EC41                    LDD     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F197 ECC811                  LDD     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F19A ECC91111                LDD     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F19E ECC4                    LDD     ,U          ; Constant Indexed non-indirect 
+ F1A0 EC61                    LDD     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F1A2 ECE811                  LDD     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F1A5 ECE91111                LDD     $1111,S     ; Constant Indexed non-indirect, 16 bits
+
+ F1A9 EC86                    LDD     A,X         ; Accumulator Indexed indirect
+ F1AB EC85                    LDD     B,X         ; Accumulator Indexed indirect
+ F1AD EC8B                    LDD     D,X         ; Accumulator Indexed indirect        
+ F1AF ECA6                    LDD     A,Y         ; Accumulator Indexed indirect
+ F1B1 ECA5                    LDD     B,Y         ; Accumulator Indexed indirect
+ F1B3 ECAB                    LDD     D,Y         ; Accumulator Indexed indirect        
+ F1B5 ECC6                    LDD     A,U         ; Accumulator Indexed indirect
+ F1B7 ECC5                    LDD     B,U         ; Accumulator Indexed indirect
+ F1B9 ECCB                    LDD     D,U         ; Accumulator Indexed indirect        
+ F1BB ECE6                    LDD     A,S         ; Accumulator Indexed indirect
+ F1BD ECE5                    LDD     B,S         ; Accumulator Indexed indirect
+ F1BF ECEB                    LDD     D,S         ; Accumulator Indexed indirect        
+
+ F1C1 EC80                    LDD     ,X+         ; Auto increment indexed non-indirect 
+ F1C3 EC81                    LDD     ,X++        ; Auto increment indexed non-indirect 
+ F1C5 EC82                    LDD     ,-X         ; Auto decrement indexed non-indirect 
+ F1C7 EC83                    LDD     ,--X        ; Auto decrement indexed non-indirect 
+ F1C9 ECA0                    LDD     ,Y+         ; Auto increment indexed non-indirect 
+ F1CB ECA1                    LDD     ,Y++        ; Auto increment indexed non-indirect 
+ F1CD ECA2                    LDD     ,-Y         ; Auto decrement indexed non-indirect 
+ F1CF ECA3                    LDD     ,--Y        ; Auto decrement indexed non-indirect 
+ F1D1 ECC0                    LDD     ,U+         ; Auto increment indexed non-indirect 
+ F1D3 ECC1                    LDD     ,U++        ; Auto increment indexed non-indirect 
+ F1D5 ECC2                    LDD     ,-U         ; Auto decrement indexed non-indirect 
+ F1D7 ECC3                    LDD     ,--U        ; Auto decrement indexed non-indirect 
+ F1D9 ECE0                    LDD     ,S+         ; Auto increment indexed non-indirect 
+ F1DB ECE1                    LDD     ,S++        ; Auto increment indexed non-indirect 
+ F1DD ECE2                    LDD     ,-S         ; Auto decrement indexed non-indirect 
+ F1DF ECE3                    LDD     ,--S        ; Auto decrement indexed non-indirect 
+
+ F1E1 EC8D0E1A                LDD     -$1,PCR     ; Constant Offset from PC
+
+ F1E5 EC94                    LDD     [,X]        ; Constant Offset from R, Indirect, no offset
+ F1E7 EC9801                  LDD     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F1EA EC991111                LDD     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F1EE ECB4                    LDD     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F1F0 ECB801                  LDD     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F1F3 ECB91111                LDD     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F1F7 ECD4                    LDD     [,U]        ; Constant Offset from R, Indirect, no offset
+ F1F9 ECD801                  LDD     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F1FC ECD91111                LDD     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F200 ECF4                    LDD     [,S]        ; Constant Offset from R, Indirect, no offset
+ F202 ECF801                  LDD     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F205 ECF91111                LDD     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F209 EC96                    LDD     [A,X]       ; Accumulator Indexed indirect
+ F20B EC95                    LDD     [B,X]       ; Accumulator Indexed indirect
+ F20D EC9B                    LDD     [D,X]       ; Accumulator Indexed indirect
+
+ F20F EC91                    LDD     [,X++]      ; Auto increment indexed indirect
+ F211 EC93                    LDD     [,--X]      ; Auto decrement indexed indirect      
+ F213 ECB1                    LDD     [,Y++]      ; Auto increment indexed indirect
+ F215 ECB3                    LDD     [,--Y]      ; Auto decrement indexed indirect
+ F217 ECD1                    LDD     [,U++]      ; Auto increment indexed indirect
+ F219 ECD3                    LDD     [,--U]      ; Auto decrement indexed indirect
+ F21B ECF1                    LDD     [,S++]      ; Auto increment indexed indirect
+ F21D ECF3                    LDD     [,--S]      ; Auto decrement indexed indirect
+
+ F21F EC9D0DDC                LDD     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LDS
+ F223 10CEF000                LDS     #MF000      ; 001C: 10 CE 00 00    Immediate
+ F227 10FEF000                LDS     MF000       ; 0020: 10 DE 00       Direct
+ F22B 10EE00                  LDS     $00,X       ; 0023: 10 EE 00       Indexed
+ F22E 10FEF000                LDS     >MF000      ; 0026: 10 FE 00 00    Extended
+                              
+ F232 10EE84                  LDS     ,X          ; Constant Indexed non-indirect 
+ F235 10EE01                  LDS     $1,X        ; Constant Indexed non-indirect
+ F238 10EE8811                LDS     $11,X       ; Constant Indexed non-indirect
+ F23C 10EE891111              LDS     $1111,X     ; Constant Indexed non-indirect
+ F241 10EEA4                  LDS     ,Y          ; Constant Indexed non-indirect 
+ F244 10EE21                  LDS     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F247 10EEA811                LDS     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F24B 10EEA91111              LDS     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F250 10EEA4                  LDS     ,Y          ; Constant Indexed non-indirect 
+ F253 10EE41                  LDS     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F256 10EEC811                LDS     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F25A 10EEC91111              LDS     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F25F 10EEC4                  LDS     ,U          ; Constant Indexed non-indirect 
+ F262 10EE61                  LDS     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F265 10EEE811                LDS     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F269 10EEE91111              LDS     $1111,S     ; Constant Indexed non-indirect, 16 bits        
+                              
+ F26E 10EE86                  LDS     A,X         ; Accumulator Indexed indirect
+ F271 10EE85                  LDS     B,X         ; Accumulator Indexed indirect
+ F274 10EE8B                  LDS     D,X         ; Accumulator Indexed indirect        
+ F277 10EEA6                  LDS     A,Y         ; Accumulator Indexed indirect
+ F27A 10EEA5                  LDS     B,Y         ; Accumulator Indexed indirect
+ F27D 10EEAB                  LDS     D,Y         ; Accumulator Indexed indirect        
+ F280 10EEC6                  LDS     A,U         ; Accumulator Indexed indirect
+ F283 10EEC5                  LDS     B,U         ; Accumulator Indexed indirect
+ F286 10EECB                  LDS     D,U         ; Accumulator Indexed indirect        
+ F289 10EEE6                  LDS     A,S         ; Accumulator Indexed indirect
+ F28C 10EEE5                  LDS     B,S         ; Accumulator Indexed indirect
+ F28F 10EEEB                  LDS     D,S         ; Accumulator Indexed indirect        
+                              
+ F292 10EE80                  LDS     ,X+         ; Auto increment indexed non-indirect 
+ F295 10EE81                  LDS     ,X++        ; Auto increment indexed non-indirect 
+ F298 10EE82                  LDS     ,-X         ; Auto decrement indexed non-indirect 
+ F29B 10EE83                  LDS     ,--X        ; Auto decrement indexed non-indirect 
+ F29E 10EEA0                  LDS     ,Y+         ; Auto increment indexed non-indirect 
+ F2A1 10EEA1                  LDS     ,Y++        ; Auto increment indexed non-indirect 
+ F2A4 10EEA2                  LDS     ,-Y         ; Auto decrement indexed non-indirect 
+ F2A7 10EEA3                  LDS     ,--Y        ; Auto decrement indexed non-indirect 
+ F2AA 10EEC0                  LDS     ,U+         ; Auto increment indexed non-indirect 
+ F2AD 10EEC1                  LDS     ,U++        ; Auto increment indexed non-indirect 
+ F2B0 10EEC2                  LDS     ,-U         ; Auto decrement indexed non-indirect 
+ F2B3 10EEC3                  LDS     ,--U        ; Auto decrement indexed non-indirect 
+ F2B6 10EEE0                  LDS     ,S+         ; Auto increment indexed non-indirect 
+ F2B9 10EEE1                  LDS     ,S++        ; Auto increment indexed non-indirect 
+ F2BC 10EEE2                  LDS     ,-S         ; Auto decrement indexed non-indirect 
+ F2BF 10EEE3                  LDS     ,--S        ; Auto decrement indexed non-indirect 
+
+ F2C2 10EE8D0D38              LDS     -$1,PCR     ; Constant Offset from PC
+
+ F2C7 10EE94                  LDS     [,X]        ; Constant Offset from R, Indirect, no offset
+ F2CA 10EE9801                LDS     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F2CE 10EE991111              LDS     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F2D3 10EEB4                  LDS     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F2D6 10EEB801                LDS     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F2DA 10EEB91111              LDS     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F2DF 10EED4                  LDS     [,U]        ; Constant Offset from R, Indirect, no offset
+ F2E2 10EED801                LDS     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F2E6 10EED91111              LDS     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F2EB 10EEF4                  LDS     [,S]        ; Constant Offset from R, Indirect, no offset
+ F2EE 10EEF801                LDS     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F2F2 10EEF91111              LDS     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F2F7 10EE96                  LDS     [A,X]       ; Accumulator Indexed indirect
+ F2FA 10EE95                  LDS     [B,X]       ; Accumulator Indexed indirect
+ F2FD 10EE9B                  LDS     [D,X]       ; Accumulator Indexed indirect
+
+ F300 10EE91                  LDS     [,X++]      ; Auto increment indexed indirect
+ F303 10EE93                  LDS     [,--X]      ; Auto decrement indexed indirect      
+ F306 10EEB1                  LDS     [,Y++]      ; Auto increment indexed indirect
+ F309 10EEB3                  LDS     [,--Y]      ; Auto decrement indexed indirect
+ F30C 10EED1                  LDS     [,U++]      ; Auto increment indexed indirect
+ F30F 10EED3                  LDS     [,--U]      ; Auto decrement indexed indirect
+ F312 10EEF1                  LDS     [,S++]      ; Auto increment indexed indirect
+ F315 10EEF3                  LDS     [,--S]      ; Auto decrement indexed indirect
+
+ F318 10EE9D0CE2              LDS     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LDU
+ F31D CEF000                  LDU     #MF000      ; 002A: CE 00 00       Immediate
+ F320 FEF000                  LDU     MF000       ; 002D: DE 00          Direct
+ F323 EE00                    LDU     $00,X       ; 002F: EE 00          Indexed
+ F325 FEF000                  LDU     >MF000      ; 0031: FE 00 00       Extended
+
+ F328 EE84                    LDU     ,X          ; Constant Indexed non-indirect 
+ F32A EE01                    LDU     $1,X        ; Constant Indexed non-indirect
+ F32C EE8811                  LDU     $11,X       ; Constant Indexed non-indirect
+ F32F EE891111                LDU     $1111,X     ; Constant Indexed non-indirect
+ F333 EEA4                    LDU     ,Y          ; Constant Indexed non-indirect 
+ F335 EE21                    LDU     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F337 EEA811                  LDU     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F33A EEA91111                LDU     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F33E EEA4                    LDU     ,Y          ; Constant Indexed non-indirect 
+ F340 EE41                    LDU     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F342 EEC811                  LDU     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F345 EEC91111                LDU     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F349 EEC4                    LDU     ,U          ; Constant Indexed non-indirect 
+ F34B EE61                    LDU     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F34D EEE811                  LDU     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F350 EEE91111                LDU     $1111,S     ; Constant Indexed non-indirect, 16 bits
+
+ F354 EE86                    LDU     A,X         ; Accumulator Indexed indirect
+ F356 EE85                    LDU     B,X         ; Accumulator Indexed indirect
+ F358 EE8B                    LDU     D,X         ; Accumulator Indexed indirect        
+ F35A EEA6                    LDU     A,Y         ; Accumulator Indexed indirect
+ F35C EEA5                    LDU     B,Y         ; Accumulator Indexed indirect
+ F35E EEAB                    LDU     D,Y         ; Accumulator Indexed indirect        
+ F360 EEC6                    LDU     A,U         ; Accumulator Indexed indirect
+ F362 EEC5                    LDU     B,U         ; Accumulator Indexed indirect
+ F364 EECB                    LDU     D,U         ; Accumulator Indexed indirect        
+ F366 EEE6                    LDU     A,S         ; Accumulator Indexed indirect
+ F368 EEE5                    LDU     B,S         ; Accumulator Indexed indirect
+ F36A EEEB                    LDU     D,S         ; Accumulator Indexed indirect        
+
+ F36C EE80                    LDU     ,X+         ; Auto increment indexed non-indirect 
+ F36E EE81                    LDU     ,X++        ; Auto increment indexed non-indirect 
+ F370 EE82                    LDU     ,-X         ; Auto decrement indexed non-indirect 
+ F372 EE83                    LDU     ,--X        ; Auto decrement indexed non-indirect 
+ F374 EEA0                    LDU     ,Y+         ; Auto increment indexed non-indirect 
+ F376 EEA1                    LDU     ,Y++        ; Auto increment indexed non-indirect 
+ F378 EEA2                    LDU     ,-Y         ; Auto decrement indexed non-indirect 
+ F37A EEA3                    LDU     ,--Y        ; Auto decrement indexed non-indirect 
+ F37C EEC0                    LDU     ,U+         ; Auto increment indexed non-indirect 
+ F37E EEC1                    LDU     ,U++        ; Auto increment indexed non-indirect 
+ F380 EEC2                    LDU     ,-U         ; Auto decrement indexed non-indirect 
+ F382 EEC3                    LDU     ,--U        ; Auto decrement indexed non-indirect 
+ F384 EEE0                    LDU     ,S+         ; Auto increment indexed non-indirect 
+ F386 EEE1                    LDU     ,S++        ; Auto increment indexed non-indirect 
+ F388 EEE2                    LDU     ,-S         ; Auto decrement indexed non-indirect 
+ F38A EEE3                    LDU     ,--S        ; Auto decrement indexed non-indirect 
+
+ F38C EE8D0C6F                LDU     -$1,PCR     ; Constant Offset from PC
+
+ F390 EE94                    LDU     [,X]        ; Constant Offset from R, Indirect, no offset
+ F392 EE9801                  LDU     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F395 EE991111                LDU     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F399 EEB4                    LDU     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F39B EEB801                  LDU     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F39E EEB91111                LDU     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F3A2 EED4                    LDU     [,U]        ; Constant Offset from R, Indirect, no offset
+ F3A4 EED801                  LDU     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F3A7 EED91111                LDU     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F3AB EEF4                    LDU     [,S]        ; Constant Offset from R, Indirect, no offset
+ F3AD EEF801                  LDU     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F3B0 EEF91111                LDU     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F3B4 EE96                    LDU     [A,X]       ; Accumulator Indexed indirect
+ F3B6 EE95                    LDU     [B,X]       ; Accumulator Indexed indirect
+ F3B8 EE9B                    LDU     [D,X]       ; Accumulator Indexed indirect
+
+ F3BA EE91                    LDU     [,X++]      ; Auto increment indexed indirect
+ F3BC EE93                    LDU     [,--X]      ; Auto decrement indexed indirect      
+ F3BE EEB1                    LDU     [,Y++]      ; Auto increment indexed indirect
+ F3C0 EEB3                    LDU     [,--Y]      ; Auto decrement indexed indirect
+ F3C2 EED1                    LDU     [,U++]      ; Auto increment indexed indirect
+ F3C4 EED3                    LDU     [,--U]      ; Auto decrement indexed indirect
+ F3C6 EEF1                    LDU     [,S++]      ; Auto increment indexed indirect
+ F3C8 EEF3                    LDU     [,--S]      ; Auto decrement indexed indirect
+
+ F3CA EE9D0C31                LDU     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ;LDX
+ F3CE 8EF000                  LDX     #MF000      ; 0034: 8E 00 00       Immediate
+ F3D1 BEF000                  LDX     MF000       ; 0037: 9E 00          Direct
+ F3D4 AE00                    LDX     $00,X       ; 0039: AE 00          Indexed
+ F3D6 BEF000                  LDX     >MF000      ; 003B: BE 00 00       Extended
+
+ F3D9 AE84                    LDX     ,X          ; Constant Indexed non-indirect 
+ F3DB AE01                    LDX     $1,X        ; Constant Indexed non-indirect
+ F3DD AE8811                  LDX     $11,X       ; Constant Indexed non-indirect
+ F3E0 AE891111                LDX     $1111,X     ; Constant Indexed non-indirect
+ F3E4 AEA4                    LDX     ,Y          ; Constant Indexed non-indirect 
+ F3E6 AE21                    LDX     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F3E8 AEA811                  LDX     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F3EB AEA91111                LDX     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F3EF AEA4                    LDX     ,Y          ; Constant Indexed non-indirect 
+ F3F1 AE41                    LDX     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F3F3 AEC811                  LDX     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F3F6 AEC91111                LDX     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F3FA AEC4                    LDX     ,U          ; Constant Indexed non-indirect 
+ F3FC AE61                    LDX     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F3FE AEE811                  LDX     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F401 AEE91111                LDX     $1111,S     ; Constant Indexed non-indirect, 16 bits
+
+ F405 AE86                    LDX     A,X         ; Accumulator Indexed indirect
+ F407 AE85                    LDX     B,X         ; Accumulator Indexed indirect
+ F409 AE8B                    LDX     D,X         ; Accumulator Indexed indirect        
+ F40B AEA6                    LDX     A,Y         ; Accumulator Indexed indirect
+ F40D AEA5                    LDX     B,Y         ; Accumulator Indexed indirect
+ F40F AEAB                    LDX     D,Y         ; Accumulator Indexed indirect        
+ F411 AEC6                    LDX     A,U         ; Accumulator Indexed indirect
+ F413 AEC5                    LDX     B,U         ; Accumulator Indexed indirect
+ F415 AECB                    LDX     D,U         ; Accumulator Indexed indirect        
+ F417 AEE6                    LDX     A,S         ; Accumulator Indexed indirect
+ F419 AEE5                    LDX     B,S         ; Accumulator Indexed indirect
+ F41B AEEB                    LDX     D,S         ; Accumulator Indexed indirect        
+
+ F41D AE80                    LDX     ,X+         ; Auto increment indexed non-indirect 
+ F41F AE81                    LDX     ,X++        ; Auto increment indexed non-indirect 
+ F421 AE82                    LDX     ,-X         ; Auto decrement indexed non-indirect 
+ F423 AE83                    LDX     ,--X        ; Auto decrement indexed non-indirect 
+ F425 AEA0                    LDX     ,Y+         ; Auto increment indexed non-indirect 
+ F427 AEA1                    LDX     ,Y++        ; Auto increment indexed non-indirect 
+ F429 AEA2                    LDX     ,-Y         ; Auto decrement indexed non-indirect 
+ F42B AEA3                    LDX     ,--Y        ; Auto decrement indexed non-indirect 
+ F42D AEC0                    LDX     ,U+         ; Auto increment indexed non-indirect 
+ F42F AEC1                    LDX     ,U++        ; Auto increment indexed non-indirect 
+ F431 AEC2                    LDX     ,-U         ; Auto decrement indexed non-indirect 
+ F433 AEC3                    LDX     ,--U        ; Auto decrement indexed non-indirect 
+ F435 AEE0                    LDX     ,S+         ; Auto increment indexed non-indirect 
+ F437 AEE1                    LDX     ,S++        ; Auto increment indexed non-indirect 
+ F439 AEE2                    LDX     ,-S         ; Auto decrement indexed non-indirect 
+ F43B AEE3                    LDX     ,--S        ; Auto decrement indexed non-indirect 
+
+ F43D AE8D0BBE                LDX     -$1,PCR     ; Constant Offset from PC
+
+ F441 AE94                    LDX     [,X]        ; Constant Offset from R, Indirect, no offset
+ F443 AE9801                  LDX     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F446 AE991111                LDX     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F44A AEB4                    LDX     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F44C AEB801                  LDX     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F44F AEB91111                LDX     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F453 AED4                    LDX     [,U]        ; Constant Offset from R, Indirect, no offset
+ F455 AED801                  LDX     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F458 AED91111                LDX     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F45C AEF4                    LDX     [,S]        ; Constant Offset from R, Indirect, no offset
+ F45E AEF801                  LDX     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F461 AEF91111                LDX     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F465 AE96                    LDX     [A,X]       ; Accumulator Indexed indirect
+ F467 AE95                    LDX     [B,X]       ; Accumulator Indexed indirect
+ F469 AE9B                    LDX     [D,X]       ; Accumulator Indexed indirect
+
+ F46B AE91                    LDX     [,X++]      ; Auto increment indexed indirect
+ F46D AE93                    LDX     [,--X]      ; Auto decrement indexed indirect      
+ F46F AEB1                    LDX     [,Y++]      ; Auto increment indexed indirect
+ F471 AEB3                    LDX     [,--Y]      ; Auto decrement indexed indirect
+ F473 AED1                    LDX     [,U++]      ; Auto increment indexed indirect
+ F475 AED3                    LDX     [,--U]      ; Auto decrement indexed indirect
+ F477 AEF1                    LDX     [,S++]      ; Auto increment indexed indirect
+ F479 AEF3                    LDX     [,--S]      ; Auto decrement indexed indirect
+
+ F47B AE9D0B80                LDX     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LDY
+ F47F 108EF000                LDY     #MF000      ; 003E: 10 8E 00 00    Immediate
+ F483 10BEF000                LDY     MF000       ; 0042: 10 9E 00       Direct
+ F487 10AE00                  LDY     $00,X       ; 0045: 10 AE 00       Indexed
+ F48A 10BEF000                LDY     >MF000      ; 0048: 10 BE 00 00    Extended
+
+ F48E 10AE84                  LDY     ,X          ; Constant Indexed non-indirect 
+ F491 10AE01                  LDY     $1,X        ; Constant Indexed non-indirect
+ F494 10AE8811                LDY     $11,X       ; Constant Indexed non-indirect
+ F498 10AE891111              LDY     $1111,X     ; Constant Indexed non-indirect
+ F49D 10AEA4                  LDY     ,Y          ; Constant Indexed non-indirect 
+ F4A0 10AE21                  LDY     $1,Y        ; Constant Indexed non-indirect, 5 bits
+ F4A3 10AEA811                LDY     $11,Y       ; Constant Indexed non-indirect, 8 bits
+ F4A7 10AEA91111              LDY     $1111,Y     ; Constant Indexed non-indirect, 16 bits
+ F4AC 10AEA4                  LDY     ,Y          ; Constant Indexed non-indirect 
+ F4AF 10AE41                  LDY     $1,U        ; Constant Indexed non-indirect, 5 bits
+ F4B2 10AEC811                LDY     $11,U       ; Constant Indexed non-indirect, 8 bits
+ F4B6 10AEC91111              LDY     $1111,U     ; Constant Indexed non-indirect, 16 bits
+ F4BB 10AEC4                  LDY     ,U          ; Constant Indexed non-indirect 
+ F4BE 10AE61                  LDY     $1,S        ; Constant Indexed non-indirect, 5 bits
+ F4C1 10AEE811                LDY     $11,S       ; Constant Indexed non-indirect, 8 bits
+ F4C5 10AEE91111              LDY     $1111,S     ; Constant Indexed non-indirect, 16 bits
+
+ F4CA 10AE86                  LDY     A,X         ; Accumulator Indexed indirect
+ F4CD 10AE85                  LDY     B,X         ; Accumulator Indexed indirect
+ F4D0 10AE8B                  LDY     D,X         ; Accumulator Indexed indirect        
+ F4D3 10AEA6                  LDY     A,Y         ; Accumulator Indexed indirect
+ F4D6 10AEA5                  LDY     B,Y         ; Accumulator Indexed indirect
+ F4D9 10AEAB                  LDY     D,Y         ; Accumulator Indexed indirect        
+ F4DC 10AEC6                  LDY     A,U         ; Accumulator Indexed indirect
+ F4DF 10AEC5                  LDY     B,U         ; Accumulator Indexed indirect
+ F4E2 10AECB                  LDY     D,U         ; Accumulator Indexed indirect        
+ F4E5 10AEE6                  LDY     A,S         ; Accumulator Indexed indirect
+ F4E8 10AEE5                  LDY     B,S         ; Accumulator Indexed indirect
+ F4EB 10AEEB                  LDY     D,S         ; Accumulator Indexed indirect        
+
+ F4EE 10AE80                  LDY     ,X+         ; Auto increment indexed non-indirect 
+ F4F1 10AE81                  LDY     ,X++        ; Auto increment indexed non-indirect 
+ F4F4 10AE82                  LDY     ,-X         ; Auto decrement indexed non-indirect 
+ F4F7 10AE83                  LDY     ,--X        ; Auto decrement indexed non-indirect 
+ F4FA 10AEA0                  LDY     ,Y+         ; Auto increment indexed non-indirect 
+ F4FD 10AEA1                  LDY     ,Y++        ; Auto increment indexed non-indirect 
+ F500 10AEA2                  LDY     ,-Y         ; Auto decrement indexed non-indirect 
+ F503 10AEA3                  LDY     ,--Y        ; Auto decrement indexed non-indirect 
+ F506 10AEC0                  LDY     ,U+         ; Auto increment indexed non-indirect 
+ F509 10AEC1                  LDY     ,U++        ; Auto increment indexed non-indirect 
+ F50C 10AEC2                  LDY     ,-U         ; Auto decrement indexed non-indirect 
+ F50F 10AEC3                  LDY     ,--U        ; Auto decrement indexed non-indirect 
+ F512 10AEE0                  LDY     ,S+         ; Auto increment indexed non-indirect 
+ F515 10AEE1                  LDY     ,S++        ; Auto increment indexed non-indirect 
+ F518 10AEE2                  LDY     ,-S         ; Auto decrement indexed non-indirect 
+ F51B 10AEE3                  LDY     ,--S        ; Auto decrement indexed non-indirect 
+
+ F51E 10AE8D0ADC              LDY     -$1,PCR     ; Constant Offset from PC
+
+ F523 10AE94                  LDY     [,X]        ; Constant Offset from R, Indirect, no offset
+ F526 10AE9801                LDY     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F52A 10AE991111              LDY     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F52F 10AEB4                  LDY     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F532 10AEB801                LDY     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F536 10AEB91111              LDY     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F53B 10AED4                  LDY     [,U]        ; Constant Offset from R, Indirect, no offset
+ F53E 10AED801                LDY     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F542 10AED91111              LDY     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F547 10AEF4                  LDY     [,S]        ; Constant Offset from R, Indirect, no offset
+ F54A 10AEF801                LDY     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F54E 10AEF91111              LDY     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F553 10AE96                  LDY     [A,X]       ; Accumulator Indexed indirect
+ F556 10AE95                  LDY     [B,X]       ; Accumulator Indexed indirect
+ F559 10AE9B                  LDY     [D,X]       ; Accumulator Indexed indirect
+
+ F55C 10AE91                  LDY     [,X++]      ; Auto increment indexed indirect
+ F55F 10AE93                  LDY     [,--X]      ; Auto decrement indexed indirect      
+ F562 10AEB1                  LDY     [,Y++]      ; Auto increment indexed indirect
+ F565 10AEB3                  LDY     [,--Y]      ; Auto decrement indexed indirect
+ F568 10AED1                  LDY     [,U++]      ; Auto increment indexed indirect
+ F56B 10AED3                  LDY     [,--U]      ; Auto decrement indexed indirect
+ F56E 10AEF1                  LDY     [,S++]      ; Auto increment indexed indirect
+ F571 10AEF3                  LDY     [,--S]      ; Auto decrement indexed indirect
+
+ F574 10AE9D0A86              LDY     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LEAS
+ F579 3284                    LEAS    ,X          ; Constant Indexed non-indirect 
+ F57B 3201                    LEAS    $1,X        ; Constant Indexed non-indirect
+ F57D 328811                  LEAS    $11,X       ; Constant Indexed non-indirect
+ F580 32891111                LEAS    $1111,X     ; Constant Indexed non-indirect
+ F584 32A4                    LEAS    ,Y          ; Constant Indexed non-indirect 
+ F586 3221                    LEAS    $1,Y        ; Constant Indexed non-indirect
+ F588 32A811                  LEAS    $11,Y       ; Constant Indexed non-indirect
+ F58B 32A91111                LEAS    $1111,Y     ; Constant Indexed non-indirect
+ F58F 32C4                    LEAS    ,U          ; Constant Indexed non-indirect 
+ F591 3241                    LEAS    $1,U        ; Constant Indexed non-indirect
+ F593 32C811                  LEAS    $11,U       ; Constant Indexed non-indirect
+ F596 32C91111                LEAS    $1111,U     ; Constant Indexed non-indirect
+ F59A 32E4                    LEAS    ,S          ; Constant Indexed non-indirect 
+ F59C 3261                    LEAS    $1,S        ; Constant Indexed non-indirect
+ F59E 32E811                  LEAS    $11,S       ; Constant Indexed non-indirect
+ F5A1 32E91111                LEAS    $1111,S     ; Constant Indexed non-indirect
+                              
+ F5A5 3286                    LEAS    A,X         ; Accumulator Indexed indirect
+ F5A7 3285                    LEAS    B,X         ; Accumulator Indexed indirect
+ F5A9 328B                    LEAS    D,X         ; Accumulator Indexed indirect
+ F5AB 32A6                    LEAS    A,Y         ; Accumulator Indexed indirect
+ F5AD 32A5                    LEAS    B,Y         ; Accumulator Indexed indirect
+ F5AF 32AB                    LEAS    D,Y         ; Accumulator Indexed indirect
+ F5B1 32C6                    LEAS    A,U         ; Accumulator Indexed indirect
+ F5B3 32C5                    LEAS    B,U         ; Accumulator Indexed indirect
+ F5B5 32CB                    LEAS    D,U         ; Accumulator Indexed indirect
+ F5B7 32E6                    LEAS    A,S         ; Accumulator Indexed indirect
+ F5B9 32E5                    LEAS    B,S         ; Accumulator Indexed indirect
+ F5BB 32EB                    LEAS    D,S         ; Accumulator Indexed indirect
+                              
+ F5BD 3280                    LEAS    ,X+         ; Auto increment indexed non-indirect 
+ F5BF 3281                    LEAS    ,X++        ; Auto increment indexed non-indirect 
+ F5C1 3282                    LEAS    ,-X         ; Auto decrement indexed non-indirect 
+ F5C3 3283                    LEAS    ,--X        ; Auto decrement indexed non-indirect 
+ F5C5 32A0                    LEAS    ,Y+         ; Auto increment indexed non-indirect 
+ F5C7 32A1                    LEAS    ,Y++        ; Auto increment indexed non-indirect 
+ F5C9 32A2                    LEAS    ,-Y         ; Auto decrement indexed non-indirect 
+ F5CB 32A3                    LEAS    ,--Y        ; Auto decrement indexed non-indirect 
+ F5CD 32C0                    LEAS    ,U+         ; Auto increment indexed non-indirect 
+ F5CF 32C1                    LEAS    ,U++        ; Auto increment indexed non-indirect 
+ F5D1 32C2                    LEAS    ,-U         ; Auto decrement indexed non-indirect 
+ F5D3 32C3                    LEAS    ,--U        ; Auto decrement indexed non-indirect 
+ F5D5 32E0                    LEAS    ,S+         ; Auto increment indexed non-indirect 
+ F5D7 32E1                    LEAS    ,S++        ; Auto increment indexed non-indirect 
+ F5D9 32E2                    LEAS    ,-S         ; Auto decrement indexed non-indirect 
+ F5DB 32E3                    LEAS    ,--S        ; Auto decrement indexed non-indirect 
+                              
+ F5DD 328D0A1E                LEAS     -$1,PCR     ; Constant Offset from PC
+
+ F5E1 3294                    LEAS     [,X]        ; Constant Offset from R, Indirect, no offset
+ F5E3 329801                  LEAS     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F5E6 32991111                LEAS     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F5EA 32B4                    LEAS     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F5EC 32B801                  LEAS     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F5EF 32B91111                LEAS     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F5F3 32D4                    LEAS     [,U]        ; Constant Offset from R, Indirect, no offset
+ F5F5 32D801                  LEAS     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F5F8 32D91111                LEAS     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F5FC 32F4                    LEAS     [,S]        ; Constant Offset from R, Indirect, no offset
+ F5FE 32F801                  LEAS     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F601 32F91111                LEAS     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F605 3296                    LEAS     [A,X]       ; Accumulator Indexed indirect
+ F607 3295                    LEAS     [B,X]       ; Accumulator Indexed indirect
+ F609 329B                    LEAS     [D,X]       ; Accumulator Indexed indirect
+
+ F60B 3291                    LEAS    [,X++]      ; Auto increment indexed indirect
+ F60D 3293                    LEAS    [,--X]      ; Auto decrement indexed indirect      
+ F60F 32B1                    LEAS    [,Y++]      ; Auto increment indexed indirect
+ F611 32B3                    LEAS    [,--Y]      ; Auto decrement indexed indirect
+ F613 32D1                    LEAS    [,U++]      ; Auto increment indexed indirect
+ F615 32D3                    LEAS    [,--U]      ; Auto decrement indexed indirect
+ F617 32F1                    LEAS    [,S++]      ; Auto increment indexed indirect
+ F619 32F3                    LEAS    [,--S]      ; Auto decrement indexed indirect
+
+ F61B 329D09E0                LEAS     [-$1,PCR]   ; Constant Offset from PC 
+                              
+                      ; LEAU
+ F61F 3384                    LEAU   ,X          ; Constant Indexed non-indirect 
+ F621 3301                    LEAU   $1,X        ; Constant Indexed non-indirect
+ F623 338811                  LEAU   $11,X       ; Constant Indexed non-indirect
+ F626 33891111                LEAU   $1111,X     ; Constant Indexed non-indirect
+ F62A 33A4                    LEAU   ,Y          ; Constant Indexed non-indirect 
+ F62C 3321                    LEAU   $1,Y        ; Constant Indexed non-indirect
+ F62E 33A811                  LEAU   $11,Y       ; Constant Indexed non-indirect
+ F631 33A91111                LEAU   $1111,Y     ; Constant Indexed non-indirect
+ F635 33C4                    LEAU   ,U          ; Constant Indexed non-indirect 
+ F637 3341                    LEAU   $1,U        ; Constant Indexed non-indirect
+ F639 33C811                  LEAU   $11,U       ; Constant Indexed non-indirect
+ F63C 33C91111                LEAU   $1111,U     ; Constant Indexed non-indirect
+ F640 33E4                    LEAU   ,S          ; Constant Indexed non-indirect 
+ F642 3361                    LEAU   $1,S        ; Constant Indexed non-indirect
+ F644 33E811                  LEAU   $11,S       ; Constant Indexed non-indirect
+ F647 33E91111                LEAU   $1111,S     ; Constant Indexed non-indirect
+                              
+ F64B 3386                    LEAU   A,X         ; Accumulator Indexed indirect
+ F64D 3385                    LEAU   B,X         ; Accumulator Indexed indirect
+ F64F 338B                    LEAU   D,X         ; Accumulator Indexed indirect
+ F651 33A6                    LEAU   A,Y         ; Accumulator Indexed indirect
+ F653 33A5                    LEAU   B,Y         ; Accumulator Indexed indirect
+ F655 33AB                    LEAU   D,Y         ; Accumulator Indexed indirect
+ F657 33C6                    LEAU   A,U         ; Accumulator Indexed indirect
+ F659 33C5                    LEAU   B,U         ; Accumulator Indexed indirect
+ F65B 33CB                    LEAU   D,U         ; Accumulator Indexed indirect
+ F65D 33E6                    LEAU   A,S         ; Accumulator Indexed indirect
+ F65F 33E5                    LEAU   B,S         ; Accumulator Indexed indirect
+ F661 33EB                    LEAU   D,S         ; Accumulator Indexed indirect
+                              
+ F663 3380                    LEAU    ,X+         ; Auto increment indexed non-indirect 
+ F665 3381                    LEAU    ,X++        ; Auto increment indexed non-indirect 
+ F667 3382                    LEAU    ,-X         ; Auto decrement indexed non-indirect 
+ F669 3383                    LEAU    ,--X        ; Auto decrement indexed non-indirect 
+ F66B 33A0                    LEAU    ,Y+         ; Auto increment indexed non-indirect 
+ F66D 33A1                    LEAU    ,Y++        ; Auto increment indexed non-indirect 
+ F66F 33A2                    LEAU    ,-Y         ; Auto decrement indexed non-indirect 
+ F671 33A3                    LEAU    ,--Y        ; Auto decrement indexed non-indirect 
+ F673 33C0                    LEAU    ,U+         ; Auto increment indexed non-indirect 
+ F675 33C1                    LEAU    ,U++        ; Auto increment indexed non-indirect 
+ F677 33C2                    LEAU    ,-U         ; Auto decrement indexed non-indirect 
+ F679 33C3                    LEAU    ,--U        ; Auto decrement indexed non-indirect 
+ F67B 33E0                    LEAU    ,S+         ; Auto increment indexed non-indirect 
+ F67D 33E1                    LEAU    ,S++        ; Auto increment indexed non-indirect 
+ F67F 33E2                    LEAU    ,-S         ; Auto decrement indexed non-indirect 
+ F681 33E3                    LEAU    ,--S        ; Auto decrement indexed non-indirect 
+                              
+ F683 338D0978                LEAU    -$1,PCR     ; Constant Offset from PC
+
+ F687 3394                    LEAU    [,X]        ; Constant Offset from R, Indirect, no offset
+ F689 339801                  LEAU    [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F68C 33991111                LEAU    [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F690 33B4                    LEAU    [,Y]        ; Constant Offset from R, Indirect, no offset
+ F692 33B801                  LEAU    [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F695 33B91111                LEAU    [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F699 33D4                    LEAU    [,U]        ; Constant Offset from R, Indirect, no offset
+ F69B 33D801                  LEAU    [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F69E 33D91111                LEAU    [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F6A2 33F4                    LEAU    [,S]        ; Constant Offset from R, Indirect, no offset
+ F6A4 33F801                  LEAU    [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F6A7 33F91111                LEAU    [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F6AB 3396                    LEAU    [A,X]       ; Accumulator Indexed indirect
+ F6AD 3395                    LEAU    [B,X]       ; Accumulator Indexed indirect
+ F6AF 339B                    LEAU    [D,X]       ; Accumulator Indexed indirect
+
+ F6B1 3391                    LEAU    [,X++]      ; Auto increment indexed indirect
+ F6B3 3393                    LEAU    [,--X]      ; Auto decrement indexed indirect      
+ F6B5 33B1                    LEAU    [,Y++]      ; Auto increment indexed indirect
+ F6B7 33B3                    LEAU    [,--Y]      ; Auto decrement indexed indirect
+ F6B9 33D1                    LEAU    [,U++]      ; Auto increment indexed indirect
+ F6BB 33D3                    LEAU    [,--U]      ; Auto decrement indexed indirect
+ F6BD 33F1                    LEAU    [,S++]      ; Auto increment indexed indirect
+ F6BF 33F3                    LEAU    [,--S]      ; Auto decrement indexed indirect
+
+ F6C1 339D093A                LEAU    [-$1,PCR]   ; Constant Offset from PC 
+                              
+                      ; LEAX
+ F6C5 3084                    LEAX    ,X          ; Constant Indexed non-indirect 
+ F6C7 3001                    LEAX    $1,X        ; Constant Indexed non-indirect
+ F6C9 308811                  LEAX    $11,X       ; Constant Indexed non-indirect
+ F6CC 30891111                LEAX    $1111,X     ; Constant Indexed non-indirect
+ F6D0 30A4                    LEAX    ,Y          ; Constant Indexed non-indirect 
+ F6D2 3021                    LEAX    $1,Y        ; Constant Indexed non-indirect
+ F6D4 30A811                  LEAX    $11,Y       ; Constant Indexed non-indirect
+ F6D7 30A91111                LEAX    $1111,Y     ; Constant Indexed non-indirect
+ F6DB 30C4                    LEAX    ,U          ; Constant Indexed non-indirect 
+ F6DD 3041                    LEAX    $1,U        ; Constant Indexed non-indirect
+ F6DF 30C811                  LEAX    $11,U       ; Constant Indexed non-indirect
+ F6E2 30C91111                LEAX    $1111,U     ; Constant Indexed non-indirect
+ F6E6 30E4                    LEAX    ,S          ; Constant Indexed non-indirect 
+ F6E8 3061                    LEAX    $1,S        ; Constant Indexed non-indirect
+ F6EA 30E811                  LEAX    $11,S       ; Constant Indexed non-indirect
+ F6ED 30E91111                LEAX    $1111,S     ; Constant Indexed non-indirect
+                              
+ F6F1 3086                    LEAX    A,X         ; Accumulator Indexed indirect
+ F6F3 3085                    LEAX    B,X         ; Accumulator Indexed indirect
+ F6F5 308B                    LEAX    D,X         ; Accumulator Indexed indirect
+ F6F7 30A6                    LEAX    A,Y         ; Accumulator Indexed indirect
+ F6F9 30A5                    LEAX    B,Y         ; Accumulator Indexed indirect
+ F6FB 30AB                    LEAX    D,Y         ; Accumulator Indexed indirect
+ F6FD 30C6                    LEAX    A,U         ; Accumulator Indexed indirect
+ F6FF 30C5                    LEAX    B,U         ; Accumulator Indexed indirect
+ F701 30CB                    LEAX    D,U         ; Accumulator Indexed indirect
+ F703 30E6                    LEAX    A,S         ; Accumulator Indexed indirect
+ F705 30E5                    LEAX    B,S         ; Accumulator Indexed indirect
+ F707 30EB                    LEAX    D,S         ; Accumulator Indexed indirect
+                              
+ F709 3080                    LEAX    ,X+         ; Auto increment indexed non-indirect 
+ F70B 3081                    LEAX    ,X++        ; Auto increment indexed non-indirect 
+ F70D 3082                    LEAX    ,-X         ; Auto decrement indexed non-indirect 
+ F70F 3083                    LEAX    ,--X        ; Auto decrement indexed non-indirect 
+ F711 30A0                    LEAX    ,Y+         ; Auto increment indexed non-indirect 
+ F713 30A1                    LEAX    ,Y++        ; Auto increment indexed non-indirect 
+ F715 30A2                    LEAX    ,-Y         ; Auto decrement indexed non-indirect 
+ F717 30A3                    LEAX    ,--Y        ; Auto decrement indexed non-indirect 
+ F719 30C0                    LEAX    ,U+         ; Auto increment indexed non-indirect 
+ F71B 30C1                    LEAX    ,U++        ; Auto increment indexed non-indirect 
+ F71D 30C2                    LEAX    ,-U         ; Auto decrement indexed non-indirect 
+ F71F 30C3                    LEAX    ,--U        ; Auto decrement indexed non-indirect 
+ F721 30E0                    LEAX    ,S+         ; Auto increment indexed non-indirect 
+ F723 30E1                    LEAX    ,S++        ; Auto increment indexed non-indirect 
+ F725 30E2                    LEAX    ,-S         ; Auto decrement indexed non-indirect 
+ F727 30E3                    LEAX    ,--S        ; Auto decrement indexed non-indirect 
+                              
+ F729 308D08D2                LEAX     -$1,PCR     ; Constant Offset from PC
+                              
+ F72D 3094                    LEAX     [,X]        ; Constant Offset from R, Indirect, no offset
+ F72F 309801                  LEAX     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F732 30991111                LEAX     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F736 30B4                    LEAX     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F738 30B801                  LEAX     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F73B 30B91111                LEAX     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F73F 30D4                    LEAX     [,U]        ; Constant Offset from R, Indirect, no offset
+ F741 30D801                  LEAX     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F744 30D91111                LEAX     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F748 30F4                    LEAX     [,S]        ; Constant Offset from R, Indirect, no offset
+ F74A 30F801                  LEAX     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F74D 30F91111                LEAX     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+
+ F751 3096                    LEAX     [A,X]       ; Accumulator Indexed indirect
+ F753 3095                    LEAX     [B,X]       ; Accumulator Indexed indirect
+ F755 309B                    LEAX     [D,X]       ; Accumulator Indexed indirect
+
+ F757 3091                    LEAX    [,X++]      ; Auto increment indexed indirect
+ F759 3093                    LEAX    [,--X]      ; Auto decrement indexed indirect      
+ F75B 30B1                    LEAX    [,Y++]      ; Auto increment indexed indirect
+ F75D 30B3                    LEAX    [,--Y]      ; Auto decrement indexed indirect
+ F75F 30D1                    LEAX    [,U++]      ; Auto increment indexed indirect
+ F761 30D3                    LEAX    [,--U]      ; Auto decrement indexed indirect
+ F763 30F1                    LEAX    [,S++]      ; Auto increment indexed indirect
+ F765 30F3                    LEAX    [,--S]      ; Auto decrement indexed indirect
+
+ F767 309D0894                LEAX     [-$1,PCR]   ; Constant Offset from PC 
+
+                      ; LEAY
+ F76B 3184                    LEAY    ,X          ; Constant Indexed non-indirect 
+ F76D 3101                    LEAY    $1,X        ; Constant Indexed non-indirect
+ F76F 318811                  LEAY    $11,X       ; Constant Indexed non-indirect
+ F772 31891111                LEAY    $1111,X     ; Constant Indexed non-indirect
+ F776 31A4                    LEAY    ,Y          ; Constant Indexed non-indirect 
+ F778 3121                    LEAY    $1,Y        ; Constant Indexed non-indirect
+ F77A 31A811                  LEAY    $11,Y       ; Constant Indexed non-indirect
+ F77D 31A91111                LEAY    $1111,Y     ; Constant Indexed non-indirect
+ F781 31C4                    LEAY    ,U          ; Constant Indexed non-indirect 
+ F783 3141                    LEAY    $1,U        ; Constant Indexed non-indirect
+ F785 31C811                  LEAY    $11,U       ; Constant Indexed non-indirect
+ F788 31C91111                LEAY    $1111,U     ; Constant Indexed non-indirect
+ F78C 31E4                    LEAY    ,S          ; Constant Indexed non-indirect 
+ F78E 3161                    LEAY    $1,S        ; Constant Indexed non-indirect
+ F790 31E811                  LEAY    $11,S       ; Constant Indexed non-indirect
+ F793 31E91111                LEAY    $1111,S     ; Constant Indexed non-indirect
+                              
+ F797 3186                    LEAY    A,X         ; Accumulator Indexed indirect
+ F799 3185                    LEAY    B,X         ; Accumulator Indexed indirect
+ F79B 318B                    LEAY    D,X         ; Accumulator Indexed indirect
+ F79D 31A6                    LEAY    A,Y         ; Accumulator Indexed indirect
+ F79F 31A5                    LEAY    B,Y         ; Accumulator Indexed indirect
+ F7A1 31AB                    LEAY    D,Y         ; Accumulator Indexed indirect
+ F7A3 31C6                    LEAY    A,U         ; Accumulator Indexed indirect
+ F7A5 31C5                    LEAY    B,U         ; Accumulator Indexed indirect
+ F7A7 31CB                    LEAY    D,U         ; Accumulator Indexed indirect
+ F7A9 31E6                    LEAY    A,S         ; Accumulator Indexed indirect
+ F7AB 31E5                    LEAY    B,S         ; Accumulator Indexed indirect
+ F7AD 31EB                    LEAY    D,S         ; Accumulator Indexed indirect
+                              
+ F7AF 3180                    LEAY    ,X+         ; Auto increment indexed non-indirect 
+ F7B1 3181                    LEAY    ,X++        ; Auto increment indexed non-indirect 
+ F7B3 3182                    LEAY    ,-X         ; Auto decrement indexed non-indirect 
+ F7B5 3183                    LEAY    ,--X        ; Auto decrement indexed non-indirect 
+ F7B7 31A0                    LEAY    ,Y+         ; Auto increment indexed non-indirect 
+ F7B9 31A1                    LEAY    ,Y++        ; Auto increment indexed non-indirect 
+ F7BB 31A2                    LEAY    ,-Y         ; Auto decrement indexed non-indirect 
+ F7BD 31A3                    LEAY    ,--Y        ; Auto decrement indexed non-indirect 
+ F7BF 31C0                    LEAY    ,U+         ; Auto increment indexed non-indirect 
+ F7C1 31C1                    LEAY    ,U++        ; Auto increment indexed non-indirect 
+ F7C3 31C2                    LEAY    ,-U         ; Auto decrement indexed non-indirect 
+ F7C5 31C3                    LEAY    ,--U        ; Auto decrement indexed non-indirect 
+ F7C7 31E0                    LEAY    ,S+         ; Auto increment indexed non-indirect 
+ F7C9 31E1                    LEAY    ,S++        ; Auto increment indexed non-indirect 
+ F7CB 31E2                    LEAY    ,-S         ; Auto decrement indexed non-indirect 
+ F7CD 31E3                    LEAY    ,--S        ; Auto decrement indexed non-indirect 
+                              
+ F7CF 318D082C                LEAY     -$1,PCR     ; Constant Offset from PC
+
+ F7D3 3194                    LEAY     [,X]        ; Constant Offset from R, Indirect, no offset
+ F7D5 319801                  LEAY     [$1,X]      ; Constant Offset from R, Indirect, 8 bits 
+ F7D8 31991111                LEAY     [$1111,X]   ; Constant Offset from R, Indirect, 16 bits
+ F7DC 31B4                    LEAY     [,Y]        ; Constant Offset from R, Indirect, no offset
+ F7DE 31B801                  LEAY     [$1,Y]      ; Constant Offset from R, Indirect, 8 bits 
+ F7E1 31B91111                LEAY     [$1111,Y]   ; Constant Offset from R, Indirect, 16 bits
+ F7E5 31D4                    LEAY     [,U]        ; Constant Offset from R, Indirect, no offset
+ F7E7 31D801                  LEAY     [$1,U]      ; Constant Offset from R, Indirect, 8 bits 
+ F7EA 31D91111                LEAY     [$1111,U]   ; Constant Offset from R, Indirect, 16 bits
+ F7EE 31F4                    LEAY     [,S]        ; Constant Offset from R, Indirect, no offset
+ F7F0 31F801                  LEAY     [$1,S]      ; Constant Offset from R, Indirect, 8 bits 
+ F7F3 31F91111                LEAY     [$1111,S]   ; Constant Offset from R, Indirect, 16 bits
+                              
+ F7F7 3196                    LEAY     [A,X]       ; Accumulator Indexed indirect
+ F7F9 3195                    LEAY     [B,X]       ; Accumulator Indexed indirect
+ F7FB 319B                    LEAY     [D,X]       ; Accumulator Indexed indirect
+
+ F7FD 3191                    LEAY    [,X++]      ; Auto increment indexed indirect
+ F7FF 3193                    LEAY    [,--X]      ; Auto decrement indexed indirect      
+ F801 31B1                    LEAY    [,Y++]      ; Auto increment indexed indirect
+ F803 31B3                    LEAY    [,--Y]      ; Auto decrement indexed indirect
+ F805 31D1                    LEAY    [,U++]      ; Auto increment indexed indirect
+ F807 31D3                    LEAY    [,--U]      ; Auto decrement indexed indirect
+ F809 31F1                    LEAY    [,S++]      ; Auto increment indexed indirect
+ F80B 31F3                    LEAY    [,--S]      ; Auto decrement indexed indirect
+
+ F80D 319D07EE                LEAY     [-$1,PCR]   ; Constant Offset from PC 
+                              
+
+
+SYMBOL TABLE
+     MF000 02 F000
+1 SYMBOLS
+
+0 error(s), 0 warning(s)
