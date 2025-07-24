@@ -10,7 +10,7 @@
                               
 
 
-This is the title or TTL         2025-07-23 A09 6809 Assembler V1.62 Page 1
+This is the title or TTL         2025-07-24 A09 6809 Assembler V1.62 Page 1
 This is the sub-title
 
                               
@@ -52,6 +52,12 @@ This is the sub-title
  4567                 SETL:   SET    $4567
 
                       RLIST2  REG     A,B,Y,U,DP
+                      RLISTA  REG     A
+                      RLISTD  REG     A,A,A
+
+ F02A 346E                    PSHS    #RLIST2
+ F02C 3502                    PULS    #RLISTA
+
 
                               OPT     PAG
                       ;        PAG enable page formatting and numbering 
@@ -67,11 +73,12 @@ This is the sub-title
                               END     
 
 
-This is the title or TTL         2025-07-23 A09 6809 Assembler V1.62 Page 2
+This is the title or TTL         2025-07-24 A09 6809 Assembler V1.62 Page 2
 This is the sub-title
 
 SYMBOL TABLE
-     LABEL 00 0000    RLIST2 14 006E      SETL 01 4567
-3 SYMBOLS
+     LABEL 00 0000    RLIST2 14 006E    RLISTA 14 0002    RLISTD 14 0002
+      SETL 01 4567
+5 SYMBOLS
 
 0 error(s), 0 warning(s)

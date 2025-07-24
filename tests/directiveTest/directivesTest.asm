@@ -35,6 +35,12 @@ SETL:	SET    $0123
 SETL:	SET    $4567
 
 RLIST2  REG     A,B,Y,U,DP
+RLISTA  REG     A
+RLISTD  REG     A,A,A
+
+        PSHS    #RLIST2
+        PULS    #RLISTA
+
 
         OPT     PAG
 ;        PAG enable page formatting and numbering 
